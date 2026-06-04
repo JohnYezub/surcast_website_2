@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Surfcast Journal — Forecasting notes & spot guides</title>
+<meta name="description" content="Plain-English guides to reading swell, wind, tide and forecast models — from the team behind Surfcast." />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  .page-head { padding: 64px 0 48px; position: relative; overflow: hidden; }
+  .page-head::before { content:""; position:absolute; inset:0; z-index:0;
+    background: radial-gradient(900px 460px at 12% -20%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 60%); }
+  .page-head .wrap { position: relative; z-index: 2; }
+  .page-head h1 { font-size: clamp(40px, 6vw, 76px); letter-spacing: -.035em; margin: 20px 0 18px; }
+
+  /* placeholder cover */
+  .ph { position: relative; border-radius: var(--r-md); overflow: hidden; background: var(--bg-surface); border: 1px solid var(--border-subtle); }
+  .ph::before { content:""; position:absolute; inset:0;
+    background-image: repeating-linear-gradient(135deg, transparent 0 13px, rgba(255,255,255,.025) 13px 26px),
+      radial-gradient(120% 120% at 0% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 55%),
+      radial-gradient(120% 120% at 100% 100%, rgba(0,196,254,.14), transparent 55%); }
+  .ph .lbl { position:absolute; left:14px; bottom:12px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; color: var(--text-tertiary); z-index:2; }
+
+  .cat { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-hi); }
+  .cat.cyan { color: var(--accent-2); }
+  .post-meta { font-family: var(--font-mono); font-size: 12.5px; color: var(--text-tertiary); display:flex; gap:14px; align-items:center; }
+  .post-meta .dot { width:3px; height:3px; border-radius:50%; background: var(--text-faint); }
+
+  /* featured */
+  .featured { display:grid; grid-template-columns: 1.15fr 1fr; gap: 44px; align-items: center;
+    background: var(--bg-card); border:1px solid var(--border-subtle); border-radius: var(--r-xl); padding: 22px; margin-bottom: 72px;
+    transition: border-color .2s ease; }
+  .featured:hover { border-color: var(--border-default); }
+  .featured .ph { aspect-ratio: 16/11; }
+  .featured .body { padding: 14px 24px 14px 8px; }
+  .featured h2 { font-size: clamp(26px, 3vw, 38px); letter-spacing: -.025em; margin: 16px 0 14px; line-height: 1.08; }
+  .featured p { color: var(--text-secondary); font-size: 17px; margin-bottom: 22px; max-width: 44ch; }
+
+  /* grid */
+  .post-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 34px 30px; }
+  .post-card { display:flex; flex-direction:column; transition: transform .2s ease; }
+  .post-card:hover { transform: translateY(-4px); }
+  .post-card:hover h3 { color: var(--accent-hi); }
+  .post-card .ph { aspect-ratio: 3/2; margin-bottom: 18px; }
+  .post-card h3 { font-family: var(--font-display); font-size: 21px; font-weight: 600; letter-spacing: -.015em; line-height: 1.2; margin: 12px 0 10px; transition: color .15s ease; }
+  .post-card p { color: var(--text-secondary); font-size: 15px; line-height: 1.55; margin-bottom: 16px; flex: 1; }
+
+  .sec-divider { font-family: var(--font-mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--text-tertiary); margin: 0 0 30px; padding-bottom: 16px; border-bottom: 1px solid var(--border-subtle); }
+
+  @media (max-width: 880px) {
+    .featured { grid-template-columns: 1fr; }
+    .featured .ph { aspect-ratio: 16/9; }
+    .post-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) { .post-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="sunGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC074"/><stop offset="1" stop-color="#E07800"/></linearGradient>
+  <clipPath id="sunClip"><circle cx="50" cy="53" r="33"/></clipPath>
+  <clipPath id="rcClip"><rect width="100" height="100" rx="26"/></clipPath>
+  <symbol id="sunset" viewBox="0 0 100 100"><g clip-path="url(#rcClip)"><rect width="100" height="100" fill="#0C1322"/><circle cx="50" cy="53" r="33" fill="url(#sunGrad)"/><g clip-path="url(#sunClip)"><rect x="0" y="60" width="100" height="40" fill="#0E7C72"/><rect x="0" y="62" width="100" height="3.4" fill="#F4FBFA"/><rect x="0" y="71" width="100" height="3.4" fill="#F4FBFA"/><rect x="0" y="80" width="100" height="3.4" fill="#F4FBFA"/></g></g></symbol>
+</defs></svg>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html"><svg class="mark" viewBox="0 0 100 100"><use href="#sunset"/></svg><span class="name">Surfcast</span></a>
+    <div class="nav-links">
+      <a href="index.html#features">Features</a>
+      <a href="index.html#compare">Models</a>
+      <a href="index.html#faq">FAQ</a>
+      <a href="blog.html" style="color:var(--text-primary)">Blog</a>
+    </div>
+    <div class="nav-cta"><a class="btn btn-primary" href="index.html#download">Get the app</a></div>
+  </div>
+</nav>
+
+<header class="page-head">
+  <div class="wrap">
+    <span class="eyebrow">The Surfcast Journal</span>
+    <h1>Notes from<br />the line-up.</h1>
+    <p class="lede">Plain-English guides to reading swell, wind, tide and forecast models — so the numbers in the app always mean something.</p>
+  </div>
+</header>
+
+<main class="wrap" style="padding-bottom: 100px">
+
+  <!-- Featured -->
+  <article class="featured">
+    <a class="ph" href="article.html" style="display:block"><span class="lbl">COVER · 1600×1100</span></a>
+    <div class="body">
+      <span class="cat">Forecasting · Featured</span>
+      <h2><a href="article.html">Swell period: the number that decides your session.</a></h2>
+      <p>Two-foot at 6 seconds and two-foot at 16 seconds are not the same wave. Here's why period — not height — is the first thing to read on any forecast.</p>
+      <div class="post-meta"><span>8 min read</span><span class="dot"></span><span>May 28, 2026</span></div>
+    </div>
+  </article>
+
+  <p class="sec-divider">Latest articles</p>
+  <div class="post-grid">
+
+    <a class="post-card" href="article.html">
+      <span class="ph"><span class="lbl">COVER · 900×600</span></span>
+      <span class="cat cyan">Models</span>
+      <h3>ECMWF vs GFS: which wave model should you trust?</h3>
+      <p>Every model has a personality. Learn where each one shines — and how to read the disagreement between them.</p>
+      <div class="post-meta"><span>6 min read</span><span class="dot"></span><span>May 21</span></div>
+    </a>
+
+    <a class="post-card" href="article.html">
+      <span class="ph"><span class="lbl">COVER · 900×600</span></span>
+      <span class="cat">Wind</span>
+      <h3>Offshore, onshore, cross-shore: a wind primer</h3>
+      <p>Why a light offshore grooms a wave and a strong onshore ruins it — and how to spot the window in the forecast.</p>
+      <div class="post-meta"><span>5 min read</span><span class="dot"></span><span>May 14</span></div>
+    </a>
+
+    <a class="post-card" href="article.html">
+      <span class="ph"><span class="lbl">COVER · 900×600</span></span>
+      <span class="cat cyan">Tides</span>
+      <h3>Tides 101: timing your paddle-out</h3>
+      <p>High, low, push and drain. How tide moves sandbars and reefs — and how to read the curve in Surfcast.</p>
+      <div class="post-meta"><span>7 min read</span><span class="dot"></span><span>May 7</span></div>
+    </a>
+
+    <a class="post-card" href="article.html">
+      <span class="ph"><span class="lbl">COVER · 900×600</span></span>
+      <span class="cat">Data</span>
+      <h3>Swell energy in kilojoules, explained</h3>
+      <p>Height tells you size; energy tells you power. What kJ really measures and why it predicts how a wave breaks.</p>
+      <div class="post-meta"><span>5 min read</span><span class="dot"></span><span>Apr 30</span></div>
+    </a>
+
+    <a class="post-card" href="article.html">
+      <span class="ph"><span class="lbl">COVER · 900×600</span></span>
+      <span class="cat cyan">Guides</span>
+      <h3>Set up the Surfcast home-screen widget</h3>
+      <p>Pin your home break and read live conditions without opening the app. A 60-second setup walkthrough.</p>
+      <div class="post-meta"><span>3 min read</span><span class="dot"></span><span>Apr 23</span></div>
+    </a>
+
+    <a class="post-card" href="article.html">
+      <span class="ph"><span class="lbl">COVER · 900×600</span></span>
+      <span class="cat">Travel</span>
+      <h3>Reading a new coast before you land</h3>
+      <p>Scoring a strange break on a trip starts with the map. How to scout swell windows anywhere in the world.</p>
+      <div class="post-meta"><span>6 min read</span><span class="dot"></span><span>Apr 16</span></div>
+    </a>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="index.html"><svg class="mark" viewBox="0 0 100 100"><use href="#sunset"/></svg><span class="name">Surfcast</span></a>
+        <p class="blurb">Surf forecasts you can actually read. Four models, live tide and swell, and your spots — in one calm app.</p>
+      </div>
+      <div><h4>Product</h4><div class="footer-links"><a href="index.html#features">Features</a><a href="index.html#compare">Model comparison</a><a href="index.html#features">Widgets</a><a href="index.html#download">Download</a></div></div>
+      <div><h4>Resources</h4><div class="footer-links"><a href="blog.html">Blog</a><a href="index.html#faq">FAQ</a><a href="mailto:hello@surfcastapp.com">Support</a></div></div>
+      <div><h4>Legal</h4><div class="footer-links"><a href="terms.html">Terms of Use</a><a href="privacy.html">Privacy Policy</a></div></div>
+    </div>
+    <div class="footer-bottom"><span class="mono">© 2026 SURFCAST · surfcastapp.com</span><span class="mono">MADE FOR THE EARLY START</span></div>
+  </div>
+</footer>
+
+</body>
+</html>
