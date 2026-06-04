@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Surfcast — Read the ocean before you paddle out</title>
+<meta name="description" content="Surf forecasts you can trust. Compare four global wave models on one screen, browse spots on a live map, and check conditions from your home screen." />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  /* ===== Landing-only styles ===== */
+
+  /* HERO */
+  .hero { position: relative; overflow: hidden; padding: 70px 0 90px; }
+  .hero::before {
+    content: ""; position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(1100px 600px at 78% -8%, rgba(0,196,254,.13), transparent 60%),
+      radial-gradient(900px 620px at 8% 12%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 62%);
+  }
+  .hero .wave-texture { position: absolute; inset: 0; z-index: 0; opacity: .7; }
+  .hero-grid {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: 1.06fr .94fr; gap: 40px; align-items: center;
+  }
+  .hero-copy .eyebrow { margin-bottom: 22px; }
+  .hero-copy h1 { margin-bottom: 24px; }
+  .hero-copy h1 .accentword { color: var(--accent-hi); }
+  .hero-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin: 34px 0 22px; }
+  .hero-meta { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; color: var(--text-tertiary); font-size: 14px; }
+  .hero-meta .sep { width: 1px; height: 16px; background: var(--border-default); }
+
+  /* hero phone */
+  .hero-stage { position: relative; display: flex; justify-content: center; }
+  .hero-phone { width: min(330px, 78%); position: relative; z-index: 2; }
+  .glow-orb { position: absolute; z-index: 1; border-radius: 50%; filter: blur(60px); opacity: .55; }
+  .glow-orb.a { width: 280px; height: 280px; background: var(--accent); top: 8%; right: 2%; opacity: .28; }
+  .glow-orb.b { width: 240px; height: 240px; background: var(--accent-2); bottom: 6%; left: 4%; opacity: .25; }
+  .float-pill {
+    position: absolute; z-index: 4;
+    display: inline-flex; align-items: center; gap: 9px;
+    background: rgba(28,39,64,.82); backdrop-filter: blur(14px);
+    border: 1px solid var(--border-default); border-radius: 14px;
+    padding: 11px 15px; box-shadow: 0 18px 40px -18px rgba(0,0,0,.8);
+  }
+  .float-pill .k { font-family: var(--font-mono); font-size: 12px; color: var(--text-tertiary); letter-spacing: .05em; }
+  .float-pill .v { font-family: var(--font-display); font-weight: 600; font-size: 17px; }
+  .float-pill.tl { top: 12%; left: -2%; }
+  .float-pill.br { bottom: 14%; right: -4%; }
+  .float-pill .dot { width: 9px; height: 9px; border-radius: 50%; }
+
+  /* hero centered variant */
+  body[data-hero="center"] .hero-grid { grid-template-columns: 1fr; text-align: center; gap: 56px; }
+  body[data-hero="center"] .hero-copy { max-width: 760px; margin: 0 auto; }
+  body[data-hero="center"] .lede { margin-left: auto; margin-right: auto; }
+  body[data-hero="center"] .hero-actions, body[data-hero="center"] .hero-meta { justify-content: center; }
+  body[data-hero="center"] .eyebrow { justify-content: center; }
+  body[data-hero="center"] .hero-phone { width: min(300px, 70%); }
+
+  /* TRUST STRIP */
+  .trust { border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); background: var(--bg-section); }
+  .trust-inner { padding: 30px 0; display: flex; align-items: center; justify-content: space-between; gap: 28px; flex-wrap: wrap; }
+  .trust-label { color: var(--text-secondary); font-size: 15px; max-width: 22ch; }
+  .trust-label strong { color: var(--text-primary); font-weight: 600; }
+  .chip-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* SECTION HEADER */
+  .sec { padding: 110px 0; }
+  .sec-head { max-width: 640px; margin-bottom: 64px; }
+  .sec-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+  .sec-head .eyebrow { margin-bottom: 18px; }
+  .sec-head h2 { margin-bottom: 18px; }
+
+  /* FEATURE ROWS */
+  .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+  .frow + .frow { margin-top: 120px; }
+  .frow.flip .fr-media { order: -1; }
+  .fr-copy h3 { font-size: clamp(26px, 2.8vw, 36px); margin-bottom: 16px; letter-spacing: -.02em; }
+  .fr-copy p { color: var(--text-secondary); font-size: 18px; max-width: 44ch; }
+  .fr-list { margin-top: 26px; display: flex; flex-direction: column; gap: 14px; }
+  .fr-list li { display: flex; gap: 13px; align-items: flex-start; color: var(--text-secondary); font-size: 15.5px; }
+  .fr-list .tick { width: 22px; height: 22px; border-radius: 7px; flex-shrink: 0; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 18%, transparent); margin-top: 1px; }
+  .fr-list .tick svg { width: 13px; height: 13px; color: var(--accent-hi); }
+
+  .fr-media { position: relative; display: flex; justify-content: center; }
+  .fr-phone { width: min(300px, 80%); position: relative; z-index: 2; }
+  .fr-media .glow-orb { width: 320px; height: 320px; opacity: .2; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  /* small feature grid */
+  .mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .mini {
+    background: var(--bg-card); border: 1px solid var(--border-subtle);
+    border-radius: var(--r-lg); padding: 30px;
+    transition: transform .2s ease, border-color .2s ease, background .2s ease;
+  }
+  .mini:hover { transform: translateY(-4px); border-color: var(--border-default); background: #1F2A45; }
+  .mini .icn { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; margin-bottom: 20px; background: var(--bg-elevated); }
+  .mini .icn svg { width: 23px; height: 23px; color: var(--accent-hi); }
+  .mini h4 { font-family: var(--font-display); font-size: 19px; font-weight: 600; margin-bottom: 9px; letter-spacing: -.01em; }
+  .mini p { color: var(--text-secondary); font-size: 15px; line-height: 1.55; }
+
+  /* COMPARE SHOWCASE (full dark) */
+  .compare { background: var(--bg-section); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); overflow: hidden; }
+  .compare .wave-texture { position: absolute; inset: 0; opacity: .5; }
+  .compare-grid { position: relative; z-index: 2; display: grid; grid-template-columns: .92fr 1.08fr; gap: 56px; align-items: center; }
+  .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 30px; max-width: 420px; }
+  .legend .item { display: flex; align-items: center; gap: 11px; padding: 13px 16px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--r-md); }
+  .legend .swatch { width: 24px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+  .legend .nm { font-family: var(--font-mono); font-size: 13px; font-weight: 500; }
+  .legend .sub { color: var(--text-tertiary); font-size: 12px; margin-left: auto; }
+
+  /* CTA band */
+  .cta { padding: 0; }
+  .cta-band {
+    position: relative; overflow: hidden;
+    border-radius: var(--r-xl);
+    padding: 80px 56px;
+    background:
+      radial-gradient(700px 380px at 80% 120%, rgba(0,196,254,.35), transparent 60%),
+      linear-gradient(135deg, color-mix(in srgb, var(--accent) 92%, #000), var(--accent-hi));
+    text-align: center;
+  }
+  .cta-band .wave-texture { position: absolute; inset: 0; opacity: .14; }
+  .cta-band > * { position: relative; z-index: 2; }
+  .cta-band h2 { color: #fff; font-size: clamp(34px, 4.6vw, 60px); margin-bottom: 18px; }
+  .cta-band p { color: rgba(255,255,255,.86); font-size: 19px; max-width: 40ch; margin: 0 auto 34px; }
+  .cta-band .appstore { box-shadow: 0 16px 40px -12px rgba(0,0,0,.5); }
+
+  /* FAQ */
+  .faq-list { max-width: 820px; margin: 0 auto; border-top: 1px solid var(--border-subtle); }
+  details.faq { border-bottom: 1px solid var(--border-subtle); }
+  details.faq summary {
+    list-style: none; cursor: pointer; padding: 26px 4px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    font-family: var(--font-display); font-size: 21px; font-weight: 500; letter-spacing: -.01em;
+  }
+  details.faq summary::-webkit-details-marker { display: none; }
+  details.faq .plus { width: 26px; height: 26px; flex-shrink: 0; position: relative; transition: transform .3s ease; }
+  details.faq .plus::before, details.faq .plus::after { content: ""; position: absolute; background: var(--accent-hi); border-radius: 2px; }
+  details.faq .plus::before { top: 12px; left: 4px; right: 4px; height: 2px; }
+  details.faq .plus::after { left: 12px; top: 4px; bottom: 4px; width: 2px; transition: opacity .3s ease; }
+  details.faq[open] .plus { transform: rotate(180deg); }
+  details.faq[open] .plus::after { opacity: 0; }
+  details.faq .answer { padding: 0 4px 28px; color: var(--text-secondary); font-size: 17px; max-width: 64ch; }
+
+  @media (max-width: 920px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 50px; text-align: center; }
+    .hero-copy { max-width: 640px; margin: 0 auto; }
+    .hero-copy .eyebrow, .hero-actions, .hero-meta { justify-content: center; }
+    .lede { margin-left: auto; margin-right: auto; }
+    .frow { grid-template-columns: 1fr; gap: 40px; }
+    .frow.flip .fr-media { order: 0; }
+    .fr-copy { text-align: center; }
+    .fr-copy p { margin-left: auto; margin-right: auto; }
+    .fr-list { max-width: 380px; margin-left: auto; margin-right: auto; }
+    .compare-grid { grid-template-columns: 1fr; gap: 44px; }
+    .legend { margin-left: auto; margin-right: auto; }
+    .mini-grid { grid-template-columns: 1fr; }
+    .sec { padding: 80px 0; }
+  }
+  @media (max-width: 560px) {
+    .cta-band { padding: 56px 24px; }
+    .float-pill.tl { left: 2%; } .float-pill.br { right: 2%; }
+  }
+</style>
+</head>
+<body data-hero="split">
+
+<!-- sunset symbol -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="sunGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFC074" /><stop offset="1" stop-color="#E07800" />
+    </linearGradient>
+    <clipPath id="sunClip"><circle cx="50" cy="53" r="33" /></clipPath>
+    <clipPath id="rcClip"><rect width="100" height="100" rx="26" /></clipPath>
+    <symbol id="sunset" viewBox="0 0 100 100">
+      <g clip-path="url(#rcClip)">
+        <rect width="100" height="100" fill="#0C1322" />
+        <circle cx="50" cy="53" r="33" fill="url(#sunGrad)" />
+        <g clip-path="url(#sunClip)">
+          <rect x="0" y="60" width="100" height="40" fill="#0E7C72" />
+          <rect x="0" y="62" width="100" height="3.4" fill="#F4FBFA" />
+          <rect x="0" y="71" width="100" height="3.4" fill="#F4FBFA" />
+          <rect x="0" y="80" width="100" height="3.4" fill="#F4FBFA" />
+        </g>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html">
+      <svg class="mark" viewBox="0 0 100 100"><use href="#sunset" /></svg>
+      <span class="name">Surfcast</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#compare">Models</a>
+      <a href="#faq">FAQ</a>
+      <a href="blog.html">Blog</a>
+    </div>
+    <div class="nav-cta">
+      <a class="btn btn-primary" href="https://apps.apple.com/id/app/surfcast-waves-wind-tides/id6760907145">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 1.6c.1 1-.3 2-1 2.8-.7.8-1.8 1.4-2.8 1.3-.1-1 .4-2 1-2.7.8-.8 2-1.4 2.8-1.4zM19 17.3c-.5 1.2-.8 1.7-1.4 2.7-.9 1.4-2.2 3.1-3.8 3.1-1.4 0-1.8-.9-3.7-.9s-2.3.9-3.7.9c-1.6 0-2.8-1.6-3.7-3C1.2 16.3.9 11.6 2.5 9.1c.9-1.4 2.5-2.3 4-2.3 1.5 0 2.5 1 3.7 1 1.2 0 2-1 3.7-1 1.3 0 2.7.7 3.7 2-3.2 1.8-2.7 6.4 1.4 8.5z" /></svg>
+        Get the app
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wave-texture"></div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-copy reveal in">
+        <span class="eyebrow">Surf forecasting, decoded</span>
+        <h1 class="display">Read the ocean<br />before you <span class="accentword">paddle out.</span></h1>
+        <p class="lede">Surfcast turns raw marine data into a forecast you can actually read. Four global wave models, live tide and swell, and your favourite spots — all in one calm, fast app.</p>
+        <div class="hero-actions">
+          <a class="appstore" href="https://apps.apple.com/id/app/surfcast-waves-wind-tides/id6760907145">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 1.6c.1 1-.3 2-1 2.8-.7.8-1.8 1.4-2.8 1.3-.1-1 .4-2 1-2.7.8-.8 2-1.4 2.8-1.4zM19 17.3c-.5 1.2-.8 1.7-1.4 2.7-.9 1.4-2.2 3.1-3.8 3.1-1.4 0-1.8-.9-3.7-.9s-2.3.9-3.7.9c-1.6 0-2.8-1.6-3.7-3C1.2 16.3.9 11.6 2.5 9.1c.9-1.4 2.5-2.3 4-2.3 1.5 0 2.5 1 3.7 1 1.2 0 2-1 3.7-1 1.3 0 2.7.7 3.7 2-3.2 1.8-2.7 6.4 1.4 8.5z" /></svg>
+            <span><span class="small">Download on the</span><br /><span class="big">App Store</span></span>
+          </a>
+          <a class="btn btn-ghost" href="#features">See how it works</a>
+        </div>
+        <div class="hero-meta">
+          <span class="rating">
+            <span class="stars">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.8 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z" /></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.8 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z" /></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.8 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z" /></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.8 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z" /></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.8 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z" /></svg>
+            </span>
+            4.9 on the App Store
+          </span>
+          <span class="sep"></span>
+          <span>Built for surfers in 90+ countries</span>
+        </div>
+      </div>
+
+      <div class="hero-stage reveal in d1">
+        <div class="glow-orb a"></div>
+        <div class="glow-orb b"></div>
+        <div class="float-pill tl" style="padding: 11px 15px 11px 36px; width: 1px; height: 52px; margin: 20px 0px 0px -40px">
+          <span class="dot" style="background: var(--accent-2); height: 8px; margin: 0px 0px 0px -20px"></span>
+          <span><span class="k">NOW</span> &nbsp;<span class="v">1.7m</span></span>
+        </div>
+        <div class="float-pill br">
+          <span class="dot" style="background:var(--m-ecmwf)"></span>
+          <span><span class="k">ECMWF</span> &nbsp;<span class="v">15s</span></span>
+        </div>
+        <div class="phone hero-phone">
+          <img src="assets/forecast.png" alt="Surfcast forecast screen showing wave height, wind and tide for Uluwatu" />
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ TRUST STRIP ============ -->
+<section class="trust">
+  <div class="wrap">
+    <div class="trust-inner">
+      <div class="trust-label"><strong>Four global forecast models.</strong> One screen.</div>
+      <div class="chip-row">
+        <span class="chip"><span class="dot" style="background:var(--m-ecmwf)"></span>ECMWF</span>
+        <span class="chip"><span class="dot" style="background:var(--m-gfs)"></span>GFS</span>
+        <span class="chip"><span class="dot" style="background:var(--m-mfwam)"></span>MFWAM</span>
+        <span class="chip"><span class="dot" style="background:var(--m-dwd)"></span>DWD</span>
+        <span class="chip" style="color:var(--text-primary);border-color:var(--border-default)">Compare →</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="sec" id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow cyan">What's inside</span>
+      <h2 class="section-title">Everything to call the session right.</h2>
+      <p class="lede">No clutter, no guesswork. Just the numbers that matter, drawn clearly enough to read at a glance from the car park.</p>
+    </div>
+
+    <!-- Row 1: Spots map -->
+    <div class="frow reveal">
+      <div class="fr-copy">
+        <h3>Every break on one live map.</h3>
+        <p>Pan the coast and see swell at a glance. Tap any pin to jump straight into its forecast — from world-class points to your secret beachie.</p>
+        <ul class="fr-list">
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6" /></svg></span>Thousands of surf spots, worldwide</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6" /></svg></span>Nearby breaks sorted by distance</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6" /></svg></span>Save favourites for one-tap access</li>
+        </ul>
+      </div>
+      <div class="fr-media">
+        <div class="glow-orb" style="background:var(--accent-2)"></div>
+        <div class="phone fr-phone"><img src="assets/spots-map.png" alt="Spots map covering the coastline of Bali" /></div>
+      </div>
+    </div>
+
+    <!-- Row 2: Forecast detail -->
+    <div class="frow flip reveal">
+      <div class="fr-copy">
+        <h3>Wave, wind &amp; tide, decoded.</h3>
+        <p>Height, period, direction, swell energy in kilojoules, wind arrows and a full tide curve — every variable a surfer reads, in one scroll.</p>
+        <ul class="fr-list">
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6" /></svg></span>Hourly height, period &amp; direction</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6" /></svg></span>Swell energy graded calm → double-overhead</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6" /></svg></span>Tide highs and lows with exact times</li>
+        </ul>
+      </div>
+      <div class="fr-media">
+        <div class="glow-orb"></div>
+        <div class="phone fr-phone"><img src="assets/forecast.png" alt="Detailed forecast with wave, wind and tide" /></div>
+      </div>
+    </div>
+
+    <!-- Row 3: Widgets -->
+    <div class="frow reveal">
+      <div class="fr-copy">
+        <h3>Conditions on your home screen.</h3>
+        <p>A home-screen widget keeps your home break one glance away — current height, period, wind and the day's tide curve, refreshed automatically.</p>
+        <ul class="fr-list">
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6" /></svg></span>Live wave, period and wind at a glance</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6" /></svg></span>Full day tide curve in the widget</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6" /></svg></span>Pin any spot you choose</li>
+        </ul>
+      </div>
+      <div class="fr-media">
+        <div class="glow-orb" style="background:var(--accent-2)"></div>
+        <div class="phone fr-phone"><img src="assets/widget.png" alt="Home screen widget showing tide curve" /></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMPARE SHOWCASE ============ -->
+<section class="compare sec" id="compare">
+  <div class="wave-texture"></div>
+  <div class="wrap">
+    <div class="compare-grid">
+      <div class="reveal">
+        <span class="eyebrow cyan">Multi-model comparison</span>
+        <h2 class="section-title" style="margin:18px 0">Compare side&nbsp;by&nbsp;side. See where forecasts agree.</h2>
+        <p class="lede">Every model tells a slightly different story. Surfcast overlays ECMWF, GFS, MFWAM and DWD on the same chart, so you can spot consensus — and back yourself when they disagree.</p>
+        <div class="legend">
+          <div class="item"><span class="swatch" style="background:var(--m-ecmwf)"></span><span class="nm">ECMWF</span><span class="sub">WAM</span></div>
+          <div class="item"><span class="swatch" style="background:var(--m-gfs)"></span><span class="nm">GFS</span><span class="sub">0.25°</span></div>
+          <div class="item"><span class="swatch" style="background:var(--m-mfwam)"></span><span class="nm">MFWAM</span><span class="sub">Météo-France</span></div>
+          <div class="item"><span class="swatch" style="background:var(--m-dwd)"></span><span class="nm">DWD</span><span class="sub">GWAM</span></div>
+        </div>
+      </div>
+      <div class="fr-media reveal d1">
+        <div class="glow-orb" style="background:var(--accent-2);opacity:.18"></div>
+        <div class="phone fr-phone" style="width:min(320px,82%)"><img src="assets/ecmwf.png" alt="Model comparison charts for wave height, wind and tide" /></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MINI FEATURES ============ -->
+<section class="sec" style="padding-top:110px">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Details that matter</span>
+      <h2 class="section-title">Small touches, fewer surprises.</h2>
+    </div>
+    <div class="mini-grid">
+      <div class="mini reveal">
+        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4" /></svg></div>
+        <h4>Swell energy in kJ</h4>
+        <p>Beyond height — see the real power behind a swell, graded from calm to double-overhead.</p>
+      </div>
+      <div class="mini reveal d1">
+        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13" /><path d="M7 11l5 5 5-5" /><path d="M5 21h14" /></svg></div>
+        <h4>Wind arrows</h4>
+        <p>Direction and speed shown as clear arrows for every hour, so offshore is obvious.</p>
+      </div>
+      <div class="mini reveal d2">
+        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M3 9h18M8 2v4M16 2v4" /></svg></div>
+        <h4>7-day outlook</h4>
+        <p>Plan the week ahead. Scan day by day and catch the swell before everyone else.</p>
+      </div>
+      <div class="mini reveal">
+        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg></div>
+        <h4>Clear at a glance</h4>
+        <p>A calm dark interface and big, legible numbers you can read in bright sun.</p>
+      </div>
+      <div class="mini reveal d1">
+        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg></div>
+        <h4>Fresh data</h4>
+        <p>Forecasts refresh through the day, drawn straight from the marine models you trust.</p>
+      </div>
+      <div class="mini reveal d2">
+        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 6-9 11-9 11s-9-5-9-11a9 9 0 0118 0z" /><circle cx="12" cy="10" r="2.5" /></svg></div>
+        <h4>Spots that travel</h4>
+        <p>From Uluwatu to your home beachie — search any coast, anywhere you chase waves.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="sec" id="faq" style="padding-top:30px">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow cyan">Good to know</span>
+      <h2 class="section-title">Questions, answered.</h2>
+    </div>
+    <div class="faq-list reveal">
+      <details class="faq" open>
+        <summary>Where does the forecast data come from?<span class="plus"></span></summary>
+        <div class="answer">Surfcast pulls from established global marine models — ECMWF (WAM), NOAA GFS Wave, Météo-France MFWAM and DWD GWAM — plus tide data, so you're reading the same science the pros rely on.</div>
+      </details>
+      <details class="faq">
+        <summary>Which regions are covered?<span class="plus"></span></summary>
+        <div class="answer">Coastlines worldwide. Search by country, region or spot name, browse breaks near you, or explore the live map to find anywhere with rideable swell.</div>
+      </details>
+      <details class="faq">
+        <summary>Is there a home-screen widget?<span class="plus"></span></summary>
+        <div class="answer">Yes. Pin any spot to a widget and see live wave height, period, wind and the full day's tide curve without opening the app.</div>
+      </details>
+      <details class="faq">
+        <summary>Do I need an account?<span class="plus"></span></summary>
+        <div class="answer">No sign-up to start checking forecasts. Download, search your spot and go — your favourites and settings stay on your device.</div>
+      </details>
+      <details class="faq">
+        <summary>Is Surfcast on Android?<span class="plus"></span></summary>
+        <div class="answer">Surfcast is on iPhone and iPad today, with Android on the way. Follow the blog for release news.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="sec cta" id="download">
+  <div class="wrap">
+    <div class="cta-band reveal">
+      <div class="wave-texture"></div>
+      <span class="eyebrow" style="color:rgba(255,255,255,.85);justify-content:center;margin-bottom:18px">Know before you go</span>
+      <h2 class="section-title">Your next session<br />starts on the home screen.</h2>
+      <p>Download Surfcast free and read the ocean before you even wax up.</p>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+        <a class="appstore" href="https://apps.apple.com/id/app/surfcast-waves-wind-tides/id6760907145">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 1.6c.1 1-.3 2-1 2.8-.7.8-1.8 1.4-2.8 1.3-.1-1 .4-2 1-2.7.8-.8 2-1.4 2.8-1.4zM19 17.3c-.5 1.2-.8 1.7-1.4 2.7-.9 1.4-2.2 3.1-3.8 3.1-1.4 0-1.8-.9-3.7-.9s-2.3.9-3.7.9c-1.6 0-2.8-1.6-3.7-3C1.2 16.3.9 11.6 2.5 9.1c.9-1.4 2.5-2.3 4-2.3 1.5 0 2.5 1 3.7 1 1.2 0 2-1 3.7-1 1.3 0 2.7.7 3.7 2-3.2 1.8-2.7 6.4 1.4 8.5z" /></svg>
+          <span><span class="small">Download on the</span><br /><span class="big">App Store</span></span>
+        </a>
+        <a class="appstore soon" href="#"><span><span class="small">Coming soon to</span><br /><span class="big">Google Play</span></span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="index.html">
+          <svg class="mark" viewBox="0 0 100 100"><use href="#sunset" /></svg>
+          <span class="name">Surfcast</span>
+        </a>
+        <p class="blurb">Surf forecasts you can actually read. Four models, live tide and swell, and your spots — in one calm app.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <div class="footer-links">
+          <a href="#features">Features</a>
+          <a href="#compare">Model comparison</a>
+          <a href="#features">Widgets</a>
+          <a href="https://apps.apple.com/id/app/surfcast-waves-wind-tides/id6760907145">Download</a>
+        </div>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <div class="footer-links">
+          <a href="blog.html">Blog</a>
+          <a href="#faq">FAQ</a>
+          <a href="mailto:hello@surfcastapp.com">Support</a>
+        </div>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <div class="footer-links">
+          <a href="terms.html">Terms of Use</a>
+          <a href="privacy.html">Privacy Policy</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="mono">© 2026 SURFCAST · surfcastapp.com</span>
+      <span class="mono">MADE FOR THE EARLY START</span>
+    </div>
+  </div>
+</footer>
+
+<!-- reveal-on-scroll -->
+<script>
+  (function () {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.reveal:not(.in)').forEach(function (el) { io.observe(el); });
+  })();
+</script>
+</body>
+</html>
