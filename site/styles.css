@@ -250,21 +250,26 @@ section { position: relative; }
 /* ============================================================
    REUSABLE: phone frame & sunset mark
    ============================================================ */
+/* iPhone 17 Pro — Cosmic Orange (Figma frame overlay) */
 .phone {
   position: relative;
-  border-radius: 44px;
-  padding: 11px;
-  background: linear-gradient(150deg, #2a3548, #131a29);
-  box-shadow:
-    0 2px 2px rgba(255,255,255,.08) inset,
-    0 50px 90px -40px rgba(0,0,0,.85),
-    0 30px 60px -30px rgba(0,0,0,.6);
+  aspect-ratio: 880 / 1832;
+  filter: drop-shadow(0 46px 60px rgba(0,0,0,.7)) drop-shadow(0 18px 26px rgba(0,0,0,.45));
+}
+/* screen sits in the frame's masked screen aperture */
+.phone img {
+  position: absolute;
+  left: 4.318%; top: 2.293%;
+  width: 91.364%; height: 95.415%;
+  border-radius: 60px;
+  background: #000;
+  display: block;
 }
 .phone::after {
-  content: ""; position: absolute; top: 22px; left: 50%; transform: translateX(-50%);
-  width: 34%; height: 26px; background: #0a0f1a; border-radius: 0 0 16px 16px; z-index: 3;
+  content: "";
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: url("assets/iphone-17-pro-cosmic-orange.svg") no-repeat center / 100% 100%;
 }
-.phone img { border-radius: 34px; width: 100%; display: block; }
 
 /* sunset brand mark base (square uses app-icon image) */
 
