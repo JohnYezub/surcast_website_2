@@ -1,0 +1,36 @@
+---
+import { APPSTORE_URL } from '../consts';
+
+interface Props {
+  /** On the homepage the section links are same-page hashes and the CTA goes
+   *  straight to the App Store; on subpages they point back to index.html. */
+  home?: boolean;
+  /** Highlights a nav link, e.g. "blog". */
+  active?: string;
+}
+const { home = false, active } = Astro.props;
+const prefix = home ? '' : 'index.html';
+const getApp = home ? APPSTORE_URL : 'index.html#download';
+---
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html">
+      <svg class="mark" viewBox="0 0 100 100"><use href="#sunset" /></svg>
+      <span class="name">Surfcast</span>
+    </a>
+    <div class="nav-links">
+      <a href={`${prefix}#features`}>Features</a>
+      <a href={`${prefix}#compare`}>Models</a>
+      <a href={`${prefix}#faq`}>FAQ</a>
+      <a href="blog.html" style={active === 'blog' ? 'color:var(--text-primary)' : undefined}>Blog</a>
+    </div>
+    <div class="nav-cta">
+      <a class="btn btn-primary" href={getApp}>
+        {home && (
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 1.6c.1 1-.3 2-1 2.8-.7.8-1.8 1.4-2.8 1.3-.1-1 .4-2 1-2.7.8-.8 2-1.4 2.8-1.4zM19 17.3c-.5 1.2-.8 1.7-1.4 2.7-.9 1.4-2.2 3.1-3.8 3.1-1.4 0-1.8-.9-3.7-.9s-2.3.9-3.7.9c-1.6 0-2.8-1.6-3.7-3C1.2 16.3.9 11.6 2.5 9.1c.9-1.4 2.5-2.3 4-2.3 1.5 0 2.5 1 3.7 1 1.2 0 2-1 3.7-1 1.3 0 2.7.7 3.7 2-3.2 1.8-2.7 6.4 1.4 8.5z" /></svg>
+        )}
+        Get the app
+      </a>
+    </div>
+  </div>
+</nav>

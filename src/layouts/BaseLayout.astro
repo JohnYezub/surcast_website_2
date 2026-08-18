@@ -1,0 +1,35 @@
+---
+import Analytics from '@vercel/analytics/astro';
+import BrandDefs from '../components/BrandDefs.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Homepage vs subpage link behaviour for Nav/Footer. */
+  home?: boolean;
+  /** Sets <body data-hero="…"> (homepage hero layout). */
+  dataHero?: string;
+  navActive?: string;
+  footerActive?: string;
+}
+const { title, description, home = false, dataHero, navActive, footerActive } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-hero={dataHero}>
+  <BrandDefs />
+  <Nav home={home} active={navActive} />
+  <slot />
+  <Footer home={home} active={footerActive} />
+  <Analytics />
+</body>
+</html>
