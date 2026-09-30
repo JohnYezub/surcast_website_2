@@ -10,8 +10,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <div class="wrap">
     <span class="eyebrow">Legal</span>
     <h1>Privacy Policy</h1>
-    <p class="updated">Last updated · May 1, 2026</p>
-    <p class="intro">Surfcast is built to need as little of your data as possible. This policy explains what we collect, why, and the controls you have.</p>
+    <p class="updated">Last updated · September 30, 2026</p>
+    <p class="intro">This policy explains what data Surfcast collects, why, who we share it with, and the controls you have.</p>
   </div>
 </header>
 
@@ -36,85 +36,103 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     <main class="legal-body">
 
-      <div class="legal-note">
-        <p><strong>The short version.</strong> Surfcast works without an account. Your saved spots and settings live on your device. We use your location only to show nearby spots, and only with your permission. We don't sell your personal data.</p>
-      </div>
-
       <section id="summary">
         <h2><span class="num">01</span>Summary</h2>
-        <p>This Privacy Policy applies to the Surfcast mobile application and surfcastapp.com. It describes how we handle information when you use them. We follow a simple principle: collect only what the app genuinely needs to give you a good forecast.</p>
+        <p>This policy covers the Surfcast mobile app and surfcastapp.com. Surfcast works without an account. We collect only what we need to show you forecasts, run subscriptions, keep the app reliable and understand which of our ads work. Surfcast shows no ads and we never sell your personal data.</p>
       </section>
 
       <section id="collect">
         <h2><span class="num">02</span>What we collect</h2>
-        <h3>Information you provide</h3>
-        <p>Surfcast does not require you to create an account. Your <strong>favourite spots, recent searches and app settings</strong> are stored locally on your device. If you choose to enable an optional sync or contact us for support, we may process the information you send us, such as your email address.</p>
-        <h3>Information collected automatically</h3>
-        <ul>
-          <li><strong>Device &amp; diagnostic data</strong> — basic information such as app version, device type and crash logs, used to keep the app stable.</li>
-          <li><strong>Usage analytics</strong> — aggregated, privacy-respecting metrics about which features are used, so we can improve them.</li>
-        </ul>
-        <p>Where required, this processing happens only with your consent, which you can withdraw at any time in your device settings.</p>
+        <p><strong>Stored only on your device:</strong> favorite spots, recently opened spots, searches and settings (units, time format, onboarding state). Home Screen widgets read a copy of your forecast and selected spot from the device.</p>
+        <p><strong>Forecast requests:</strong> to load a forecast, the app sends the coordinates of the selected spot, or of your current position if you use location, to the weather and tide data services we use. The request contains only the coordinates and a date range — no account, name or device identifier — and we do not store these coordinates on any server of ours.</p>
+        <p><strong>Usage and diagnostics (Google Firebase):</strong> app interactions (for example screens viewed, forecasts opened, paywall viewed), app version, device model and OS, a random app-instance identifier, approximate country derived from your IP address, performance data and crash reports.</p>
+        <p><strong>Purchases (Apple and RevenueCat):</strong> if you subscribe to Surfcast Pro, Apple processes the payment. We and our subscription provider RevenueCat receive the subscription status, product, price, currency, transaction dates and a random RevenueCat user ID. We never receive your payment card details or your Apple Account name or email.</p>
+        <p><strong>Advertising measurement (AppsFlyer, Apple Search Ads):</strong> to learn which ads bring people to Surfcast, our measurement partner AppsFlyer receives the app install, a few in-app events (onboarding completed, paywall viewed, subscription started) and subscription revenue, together with device information (device model, OS, IP address, the identifier for vendor, and the advertising identifier only if you allow tracking — see section 07). Apple Search Ads attribution uses an Apple attribution token that contains no personal identifier. In the EEA, the UK and Switzerland this measurement is shared with ad networks only with your consent.</p>
+        <p><strong>Notifications:</strong> if you opt in to special offers, we schedule reminders on your device. You can turn them off at any time.</p>
+        <p><strong>Support:</strong> if you email us, we receive your email address and the content of your message.</p>
       </section>
 
       <section id="location">
         <h2><span class="num">03</span>Location data</h2>
-        <p>With your permission, Surfcast uses your device location to show surf spots near you and to centre the spots map. You can use the app without granting location access — you'll simply search for spots manually instead.</p>
-        <ul>
-          <li>Location is used on-device to find nearby spots and is not used to track you across other apps or services.</li>
-          <li>You can change or revoke location permission at any time in your device's settings.</li>
-        </ul>
+        <p>Surfcast asks for location permission ("While Using the App") to show nearby spots, center the map and load the forecast for where you are. The coordinates are sent to our weather and tide data services only to fetch that forecast. Your precise location is not used for advertising or tracking and is not shared with AppsFlyer or ad networks (they may derive an approximate country or city from your IP address, as described in section 02). You can change the permission at any time in iOS Settings → Surfcast → Location.</p>
       </section>
 
       <section id="use">
-        <h2><span class="num">04</span>How we use data</h2>
-        <p>We use the limited information described above to:</p>
-        <ul>
-          <li>Deliver forecasts and show spots relevant to you.</li>
-          <li>Maintain, secure and improve the app's reliability and performance.</li>
-          <li>Understand which features are valuable so we can build the right things.</li>
-          <li>Respond to your support requests.</li>
-        </ul>
-        <p>We do not use your personal data for third-party advertising, and we do not sell it.</p>
+        <h2><span class="num">04</span>How we use data and legal bases</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Purpose</th><th>Data</th><th>Legal basis (EEA/UK)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Show forecasts, tides and nearby spots</td><td>Spot coordinates, location (if allowed)</td><td>Performance of the service</td></tr>
+              <tr><td>Provide and restore Surfcast Pro</td><td>Purchase data</td><td>Performance of a contract</td></tr>
+              <tr><td>Keep the app reliable and secure, fix crashes</td><td>Diagnostics, crash reports</td><td>Legitimate interests</td></tr>
+              <tr><td>Improve features with aggregated usage statistics</td><td>Usage data</td><td>Legitimate interests</td></tr>
+              <tr><td>Measure which ads bring users and subscribers</td><td>Advertising measurement data</td><td>Consent (EEA, UK, Switzerland); legitimate interests elsewhere</td></tr>
+              <tr><td>Cross-app tracking with the advertising identifier</td><td>Advertising identifier</td><td>Your permission via Apple's App Tracking Transparency</td></tr>
+              <tr><td>Send special-offer reminders</td><td>Notification schedule on device</td><td>Consent</td></tr>
+              <tr><td>Answer support requests</td><td>Email and message</td><td>Legitimate interests</td></tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section id="sharing">
         <h2><span class="num">05</span>Sharing &amp; third parties</h2>
-        <p>We share data only with service providers that help us run Surfcast — for example, analytics and crash-reporting tools, and the marine-data and mapping providers that power forecasts. These providers process data on our behalf under appropriate agreements, or under their own terms for the data they supply.</p>
-        <p>We may also disclose information if required by law, or to protect the rights, safety and security of our users and the public.</p>
+        <p>We share data only with providers that help us run Surfcast, under agreements that limit their use of it:</p>
+        <ul>
+          <li><strong>Google Firebase</strong> (Google LLC) — analytics, crash reporting, performance monitoring, remote configuration.</li>
+          <li><strong>RevenueCat</strong> (RevenueCat, Inc.) — subscription management; it forwards subscription events to Google Analytics and AppsFlyer on our behalf.</li>
+          <li><strong>Apple</strong> — App Store payments, Search Ads attribution, Maps.</li>
+          <li><strong>AppsFlyer</strong> (AppsFlyer Ltd.) — install and campaign attribution, deep links.</li>
+          <li><strong>Ad networks we advertise with</strong> (for example Meta, Google, Snap) — receive install and subscription events from AppsFlyer only to measure and optimize our campaigns; in the EEA, UK and Switzerland only with your consent.</li>
+          <li><strong>Weather and tide data services</strong> — receive spot coordinates (without any identifier) to return forecasts.</li>
+        </ul>
+        <p>We do not sell personal data. We disclose data if required by law or to protect the safety of users. Some providers process data outside your country, including in the United States; such transfers rely on the EU Standard Contractual Clauses or the EU–US Data Privacy Framework where applicable.</p>
       </section>
 
       <section id="retention">
         <h2><span class="num">06</span>Storage &amp; retention</h2>
-        <p>Spots, searches and settings remain on your device until you delete them or remove the app. Diagnostic and analytics data is retained only as long as needed for the purposes described, then deleted or anonymised. Information processed by our service providers is retained according to their policies and our agreements with them.</p>
+        <ul>
+          <li>Data on your device stays until you delete it or the app.</li>
+          <li>Analytics event data is kept for up to 14 months; crash reports according to Firebase's retention (currently about 90 days).</li>
+          <li>Purchase records are kept as long as needed to provide the subscription and for accounting and tax obligations.</li>
+          <li>Attribution data is kept according to AppsFlyer's retention settings for our account ([retention period]).</li>
+          <li>Support emails are deleted when no longer needed to help you.</li>
+        </ul>
       </section>
 
       <section id="rights">
         <h2><span class="num">07</span>Your rights &amp; choices</h2>
-        <p>Depending on where you live, you may have rights to access, correct, delete or restrict the processing of your personal data, and to object to certain processing. Because most data stays on your device, you can exercise much of this control directly:</p>
         <ul>
-          <li>Clear saved spots and history within the app.</li>
-          <li>Manage location, notification and tracking permissions in your device settings.</li>
-          <li>Delete the app to remove locally-stored data from your device.</li>
+          <li><strong>Ad measurement consent (EEA, UK, Switzerland):</strong> Surfcast → Settings → Privacy → Ad measurement. Changing it takes effect immediately.</li>
+          <li><strong>Tracking:</strong> iOS Settings → Privacy &amp; Security → Tracking. If tracking is off, the advertising identifier is never shared.</li>
+          <li><strong>Location:</strong> iOS Settings → Surfcast → Location.</li>
+          <li><strong>Special offers:</strong> Surfcast → Settings → Special offers, or iOS notification settings.</li>
+          <li><strong>Subscriptions:</strong> manage or cancel in your Apple Account subscription settings.</li>
+          <li><strong>Delete local data:</strong> remove favorites and recent spots in the app, or delete the app.</li>
         </ul>
-        <p>To make a formal request about any data we process, contact us using the details below.</p>
+        <p>Depending on where you live, you may have the right to access, correct, delete, restrict or object to the processing of your data, to data portability, and to withdraw consent at any time without affecting earlier processing. Because Surfcast has no accounts, please include your app version and device model when you write to us so we can find the data linked to your device. You can also complain to your local data protection authority.</p>
       </section>
 
       <section id="children">
         <h2><span class="num">08</span>Children</h2>
-        <p>Surfcast is not directed at children under 13, and we do not knowingly collect personal data from them. If you believe a child has provided us with personal data, please contact us and we will take appropriate steps to delete it.</p>
+        <p>Surfcast is not directed at children under 13 (or the minimum age of digital consent in your country) and we do not knowingly collect their data. If you believe a child has provided data, contact us and we will delete it.</p>
       </section>
 
       <section id="changes">
-        <h2><span class="num">09</span>Changes to this policy</h2>
-        <p>We may update this Privacy Policy as the app evolves or as the law requires. We will revise the "last updated" date above and, for material changes, provide an in-app notice where appropriate.</p>
+        <h2><span class="num">09</span>Changes</h2>
+        <p>We will update this page and the "Last updated" date when our practices change, and note material changes in the app.</p>
       </section>
 
       <hr class="legal-divider" />
 
       <section id="contact">
         <h2><span class="num">10</span>Contact</h2>
-        <p>For any privacy question or request, email <a href="mailto:privacy@surfcastapp.com">privacy@surfcastapp.com</a>.</p>
+        <p>Data controller: [legal name of the operator], [postal address]</p>
+        <p>Email: <a href="mailto:privacy@surfcastapp.com">privacy@surfcastapp.com</a></p>
+        <p>[EU/UK representative under GDPR Art. 27, if the operator is established outside the EU/UK: name and address]</p>
       </section>
 
     </main>

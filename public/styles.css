@@ -319,6 +319,14 @@ section { position: relative; }
 .legal-note p { font-size: 15.5px; color: var(--text-secondary); margin: 0; }
 .legal-divider { height:1px; background: var(--border-subtle); border:0; margin: 34px 0; }
 
+/* data tables inside legal pages (scrolls sideways on narrow screens) */
+.legal-body .table-wrap { overflow-x: auto; margin: 0 0 22px; border: 1px solid var(--border-subtle); border-radius: var(--r-md); }
+.legal-body table { width: 100%; border-collapse: collapse; min-width: 560px; }
+.legal-body th, .legal-body td { text-align: left; vertical-align: top; padding: 14px 18px; font-size: 15px; line-height: 1.5; color: #C8D3E0; border-bottom: 1px solid var(--border-subtle); }
+.legal-body th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--text-tertiary); background: var(--bg-surface); }
+.legal-body tbody tr:last-child td { border-bottom: 0; }
+.legal-body td:first-child { color: #fff; }
+
 @media (max-width: 880px) {
   .legal-grid { grid-template-columns: 1fr; gap: 8px; }
   .toc { position: static; margin-bottom: 30px; padding-bottom: 26px; border-bottom: 1px solid var(--border-subtle); }
