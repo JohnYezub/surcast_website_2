@@ -3,7 +3,8 @@
    Shared across landing, blog, article, terms, privacy
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+/* Fonts (Space Grotesk, Hanken Grotesk, JetBrains Mono) are loaded from the
+   <head> in src/layouts/BaseLayout.astro, not via @import, so they don't block CSS. */
 
 :root {
   /* Backgrounds — from AppTheme */

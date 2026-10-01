@@ -1,12 +1,99 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { APPSTORE_URL } from '../consts';
+import { APPSTORE_URL, APP_RATING, APP_STORE_TITLE, SITE_NAME, SITE_URL, LOGO, OG_IMAGE } from '../consts';
+import forecast from '../assets/forecast.png';
+import spotsMap from '../assets/spots-map.png';
+import widget from '../assets/widget.png';
+import ecmwf from '../assets/ecmwf.png';
+
+const title = 'Surfcast – Surf Forecast App: Wave Models, Tides & Wind';
+const description =
+  'Surf forecasts you can trust. Compare four global wave models on one screen, browse spots on a live map, and check conditions from your home screen.';
+
+// Single source of truth: rendered as <details> below and as FAQPage JSON-LD.
+const faqs = [
+  {
+    q: 'Where does the forecast data come from?',
+    a: "Surfcast pulls from established global marine models — ECMWF (WAM), NOAA GFS Wave, Météo-France MFWAM and DWD GWAM — plus tide data, so you're reading the same science the pros rely on.",
+  },
+  {
+    q: 'Which regions are covered?',
+    a: 'Coastlines worldwide. Search by country, region or spot name, browse breaks near you, or explore the live map to find anywhere with rideable swell.',
+  },
+  {
+    q: 'Is there a home-screen widget?',
+    a: "Yes. Pin any spot to a widget and see live wave height, period, wind and the full day's tide curve without opening the app.",
+  },
+  {
+    q: 'Do I need an account?',
+    a: 'No sign-up to start checking forecasts. Download, search your spot and go — your favourites and settings stay on your device.',
+  },
+  {
+    q: 'Is Surfcast on Android?',
+    a: 'Surfcast is on iPhone and iPad today, with Android on the way. Follow the blog for release news.',
+  },
+];
+
+const organizationId = `${SITE_URL}/#organization`;
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': organizationId,
+    name: SITE_NAME,
+    url: `${SITE_URL}/`,
+    logo: { '@type': 'ImageObject', url: `${SITE_URL}${LOGO}` },
+    sameAs: [APPSTORE_URL],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: `${SITE_URL}/`,
+    inLanguage: 'en',
+    publisher: { '@id': organizationId },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'MobileApplication',
+    name: APP_STORE_TITLE,
+    alternateName: SITE_NAME,
+    description,
+    url: `${SITE_URL}/`,
+    image: `${SITE_URL}${OG_IMAGE}`,
+    operatingSystem: 'iOS',
+    applicationCategory: 'WeatherApplication',
+    downloadUrl: APPSTORE_URL,
+    installUrl: APPSTORE_URL,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: APP_RATING.value,
+      bestRating: 5,
+      worstRating: 1,
+      ratingCount: APP_RATING.count,
+    },
+    publisher: { '@id': organizationId },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  },
+];
 ---
 <BaseLayout
-  title="Surfcast — Read the ocean before you paddle out"
-  description="Surf forecasts you can trust. Compare four global wave models on one screen, browse spots on a live map, and check conditions from your home screen."
+  title={title}
+  description={description}
+  canonicalPath="/"
   home={true}
   dataHero="split"
+  jsonLd={jsonLd}
 >
 <style is:global>
   /* ===== Landing-only styles ===== */
@@ -190,7 +277,7 @@ import { APPSTORE_URL } from '../consts';
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.8 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z" /></svg>
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.8 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z" /></svg>
             </span>
-            4.9 on the App Store
+            {APP_RATING.value.toFixed(1)} on the App Store
           </span>
           <span class="sep"></span>
           <span>Built for surfers in 90+ countries</span>
@@ -201,7 +288,7 @@ import { APPSTORE_URL } from '../consts';
         <div class="glow-orb a"></div>
         <div class="glow-orb b"></div>
         <div class="phone hero-phone">
-          <img src="assets/forecast.png" alt="Surfcast forecast screen showing wave height, wind and tide for Uluwatu" style="border-radius: 44px" />
+          <Image src={forecast} alt="Surfcast forecast screen showing wave height, wind and tide for Uluwatu" width={660} widths={[330, 660, 990]} sizes="(max-width: 420px) 78vw, 330px" format="webp" quality={80} loading="eager" fetchpriority="high" style="border-radius: 44px" />
         </div>
       </div>
       <div class="float-pill br" style="left: 550px; top: 202px; position: absolute; width: 128px; height: 64px">
@@ -254,7 +341,7 @@ import { APPSTORE_URL } from '../consts';
       </div>
       <div class="fr-media">
         <div class="glow-orb" style="background:var(--accent-2)"></div>
-        <div class="phone fr-phone"><img src="assets/spots-map.png" alt="Spots map covering the coastline of Bali" style="border-radius: 44px" /></div>
+        <div class="phone fr-phone"><Image src={spotsMap} alt="Spots map covering the coastline of Bali" width={600} widths={[300, 600, 900]} sizes="(max-width: 400px) 80vw, 300px" format="webp" quality={80} style="border-radius: 44px" /></div>
       </div>
     </div>
 
@@ -271,7 +358,7 @@ import { APPSTORE_URL } from '../consts';
       </div>
       <div class="fr-media">
         <div class="glow-orb"></div>
-        <div class="phone fr-phone"><img src="assets/forecast.png" alt="Detailed forecast with wave, wind and tide" style="border-radius: 44px" /></div>
+        <div class="phone fr-phone"><Image src={forecast} alt="Detailed forecast with wave, wind and tide" width={600} widths={[300, 600, 900]} sizes="(max-width: 400px) 80vw, 300px" format="webp" quality={80} style="border-radius: 44px" /></div>
       </div>
     </div>
 
@@ -288,7 +375,7 @@ import { APPSTORE_URL } from '../consts';
       </div>
       <div class="fr-media">
         <div class="glow-orb" style="background:var(--accent-2)"></div>
-        <div class="phone fr-phone"><img src="assets/widget.png" alt="Home screen widget showing tide curve" style="border-radius: 44px" /></div>
+        <div class="phone fr-phone"><Image src={widget} alt="Home screen widget showing tide curve" width={600} widths={[300, 600, 900]} sizes="(max-width: 400px) 80vw, 300px" format="webp" quality={80} style="border-radius: 44px" /></div>
       </div>
     </div>
   </div>
@@ -312,7 +399,7 @@ import { APPSTORE_URL } from '../consts';
       </div>
       <div class="fr-media reveal d1">
         <div class="glow-orb" style="background:var(--accent-2);opacity:.18"></div>
-        <div class="phone fr-phone" style="width:min(320px,82%)"><img src="assets/ecmwf.png" alt="Model comparison charts for wave height, wind and tide" style="border-radius: 44px" /></div>
+        <div class="phone fr-phone" style="width:min(320px,82%)"><Image src={ecmwf} alt="Model comparison charts for wave height, wind and tide" width={640} widths={[320, 640, 960]} sizes="(max-width: 400px) 80vw, 320px" format="webp" quality={80} style="border-radius: 44px" /></div>
       </div>
     </div>
   </div>
@@ -368,26 +455,12 @@ import { APPSTORE_URL } from '../consts';
       <h2 class="section-title">Questions, answered.</h2>
     </div>
     <div class="faq-list reveal">
-      <details class="faq" open>
-        <summary>Where does the forecast data come from?<span class="plus"></span></summary>
-        <div class="answer">Surfcast pulls from established global marine models — ECMWF (WAM), NOAA GFS Wave, Météo-France MFWAM and DWD GWAM — plus tide data, so you're reading the same science the pros rely on.</div>
-      </details>
-      <details class="faq">
-        <summary>Which regions are covered?<span class="plus"></span></summary>
-        <div class="answer">Coastlines worldwide. Search by country, region or spot name, browse breaks near you, or explore the live map to find anywhere with rideable swell.</div>
-      </details>
-      <details class="faq">
-        <summary>Is there a home-screen widget?<span class="plus"></span></summary>
-        <div class="answer">Yes. Pin any spot to a widget and see live wave height, period, wind and the full day's tide curve without opening the app.</div>
-      </details>
-      <details class="faq">
-        <summary>Do I need an account?<span class="plus"></span></summary>
-        <div class="answer">No sign-up to start checking forecasts. Download, search your spot and go — your favourites and settings stay on your device.</div>
-      </details>
-      <details class="faq">
-        <summary>Is Surfcast on Android?<span class="plus"></span></summary>
-        <div class="answer">Surfcast is on iPhone and iPad today, with Android on the way. Follow the blog for release news.</div>
-      </details>
+      {faqs.map(({ q, a }, i) => (
+        <details class="faq" open={i === 0}>
+          <summary>{q}<span class="plus"></span></summary>
+          <div class="answer">{a}</div>
+        </details>
+      ))}
     </div>
   </div>
 </section>

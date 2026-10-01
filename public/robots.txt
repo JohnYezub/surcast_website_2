@@ -1,0 +1,5 @@
+# Surfcast — crawlers (search engines and AI assistants) are welcome.
+User-agent: *
+Allow: /
+
+Sitemap: https://www.surfcastapp.com/sitemap.xml
