@@ -5,7 +5,9 @@ import { APPSTORE_URL, APP_RATING, APP_STORE_TITLE, SITE_NAME, SITE_URL, LOGO, O
 import forecast from '../assets/forecast.png';
 import spotsMap from '../assets/spots-map.png';
 import widget from '../assets/widget.png';
-import ecmwf from '../assets/ecmwf.png';
+import ModelChart from '../components/ModelChart.astro';
+import { heroSwell, mapMotif, forecastMotif, widgetTide, ctaSwell } from '../lib/motion-geometry';
+import '../styles/landing-motion.css';
 
 const title = 'Surfcast – Surf Forecast App: Wave Models, Tides & Wind';
 const description =
@@ -33,6 +35,19 @@ const faqs = [
     q: 'Is Surfcast on Android?',
     a: 'Surfcast is on iPhone and iPad today, with Android on the way. Follow the blog for release news.',
   },
+];
+
+// Decorative motion geometry, generated at build time (seeded, deterministic).
+const swell = heroSwell();
+const map = mapMotif();
+const fc = forecastMotif();
+const tide = widgetTide();
+const ctaLines = ctaSwell();
+const modelTags = [
+  { name: 'ECMWF', color: 'var(--m-ecmwf)' },
+  { name: 'GFS', color: 'var(--m-gfs)' },
+  { name: 'MFWAM', color: 'var(--m-mfwam)' },
+  { name: 'DWD', color: 'var(--m-dwd)' },
 ];
 
 const organizationId = `${SITE_URL}/#organization`;
@@ -179,9 +194,7 @@ const jsonLd = [
   .mini {
     background: var(--bg-card); border: 1px solid var(--border-subtle);
     border-radius: var(--r-lg); padding: 30px;
-    transition: transform .2s ease, border-color .2s ease, background .2s ease;
   }
-  .mini:hover { transform: translateY(-4px); border-color: var(--border-default); background: #1F2A45; }
   .mini .icn { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; margin-bottom: 20px; background: var(--bg-elevated); }
   .mini .icn svg { width: 23px; height: 23px; color: var(--accent-hi); }
   .mini h4 { font-family: var(--font-display); font-size: 19px; font-weight: 600; margin-bottom: 9px; letter-spacing: -.01em; }
@@ -255,9 +268,18 @@ const jsonLd = [
 <!-- ============ HERO ============ -->
 <header class="hero">
   <div class="wave-texture"></div>
+  <div class="swell" aria-hidden="true">
+    {Object.entries(swell).map(([layer, lines]) => (
+      <svg class={`swell-${layer}`} viewBox="0 0 3840 800" fill="none" stroke-linecap="round">
+        {lines.map((l) => (
+          <path class="sw-line" pathLength="1" style={`stroke:${l.color};--d:${l.delay}`} stroke-opacity={l.opacity} stroke-width={l.width} d={l.d} />
+        ))}
+      </svg>
+    ))}
+  </div>
   <div class="wrap">
     <div class="hero-grid">
-      <div class="hero-copy reveal in">
+      <div class="hero-copy">
         <span class="eyebrow">Surf forecasting, decoded</span>
         <h1 class="display">Read the ocean<br />before you <span class="accentword">paddle out.</span></h1>
         <p class="lede">Surfcast turns raw marine data into a forecast you can actually read. Four global wave models, live tide and swell, and your favourite spots — all in one calm, fast app.</p>
@@ -284,20 +306,20 @@ const jsonLd = [
         </div>
       </div>
 
-      <div class="hero-stage reveal in d1">
+      <div class="hero-stage">
         <div class="glow-orb a"></div>
         <div class="glow-orb b"></div>
         <div class="phone hero-phone">
           <Image src={forecast} alt="Surfcast forecast screen showing wave height, wind and tide for Uluwatu" width={660} widths={[330, 660, 990]} sizes="(max-width: 420px) 78vw, 330px" format="webp" quality={80} loading="eager" fetchpriority="high" style="border-radius: 44px" />
         </div>
       </div>
-      <div class="float-pill br" style="left: 550px; top: 202px; position: absolute; width: 128px; height: 64px">
+      <div class="float-pill br" style="--d:.9s; left: 550px; top: 202px; position: absolute; width: 128px; height: 64px">
         <span class="dot" style="background:var(--m-ecmwf)"></span>
         <span><span class="k">ECMWF</span> &nbsp;<span class="v">15s</span></span>
       </div>
-      <div class="float-pill tl" style="left: 550px; top: 100px; position: absolute; width: 128px; height: 64px">
+      <div class="float-pill tl" style="--d:1.15s; left: 550px; top: 100px; position: absolute; width: 128px; height: 64px">
         <span class="dot" style="background: var(--accent-2)"></span>
-        <span><span class="k">NOW</span> &nbsp;<span class="v">1.7m</span></span>
+        <span><span class="k">NOW</span> &nbsp;<span class="v"><span data-count="1.7" data-delay="1200">1.7</span>m</span></span>
       </div>
     </div>
   </div>
@@ -308,11 +330,10 @@ const jsonLd = [
   <div class="wrap">
     <div class="trust-inner">
       <div class="trust-label"><strong>Four global forecast models.</strong> One screen.</div>
-      <div class="chip-row">
-        <span class="chip"><span class="dot" style="background:var(--m-ecmwf)"></span>ECMWF</span>
-        <span class="chip"><span class="dot" style="background:var(--m-gfs)"></span>GFS</span>
-        <span class="chip"><span class="dot" style="background:var(--m-mfwam)"></span>MFWAM</span>
-        <span class="chip"><span class="dot" style="background:var(--m-dwd)"></span>DWD</span>
+      <div class="chip-row mo">
+        {modelTags.map((m, i) => (
+          <span class="chip a" style={`--c:${m.color};--d:${(i * 0.15).toFixed(2)}s`}><span class="dot" style={`background:${m.color}`}></span>{m.name}</span>
+        ))}
         <span class="chip" style="color:var(--text-primary);border-color:var(--border-default)">Compare →</span>
       </div>
     </div>
@@ -322,14 +343,14 @@ const jsonLd = [
 <!-- ============ FEATURES ============ -->
 <section class="sec" id="features">
   <div class="wrap">
-    <div class="sec-head reveal">
+    <div class="sec-head">
       <span class="eyebrow cyan">What's inside</span>
       <h2 class="section-title">Everything to call the session right.</h2>
       <p class="lede">No clutter, no guesswork. Just the numbers that matter, drawn clearly enough to read at a glance from the car park.</p>
     </div>
 
     <!-- Row 1: Spots map -->
-    <div class="frow reveal">
+    <div class="frow mo">
       <div class="fr-copy">
         <h3>Every break on one live map.</h3>
         <p>Pan the coast and see swell at a glance. Tap any pin to jump straight into its forecast — from world-class points to your secret beachie.</p>
@@ -341,12 +362,27 @@ const jsonLd = [
       </div>
       <div class="fr-media">
         <div class="glow-orb" style="background:var(--accent-2)"></div>
+        <div class="fm" aria-hidden="true">
+          <svg viewBox="0 0 560 560" fill="none" style="stroke:var(--accent-2)" stroke-width="1.2">
+            {map.rings.map((r) => <path class="a fm-ring" pathLength="1" style={`--d:${r.delay}`} stroke-opacity={r.opacity} d={r.d} />)}
+            <g stroke="none">
+              {map.pins.map((p) => (
+                <g transform={`translate(${p.x} ${p.y})`}>
+                  <g class="a fm-pin" style={`--d:${p.delay}`}>
+                    <path d="M0 0C-3-5-8-9-8-15a8 8 0 0 1 16 0c0 6-5 10-8 15z" style={`fill:${p.ember ? 'var(--m-mfwam)' : 'var(--accent-2)'}`} />
+                    <circle cy="-15" r="3" style="fill:var(--bg-base)" />
+                  </g>
+                </g>
+              ))}
+            </g>
+          </svg>
+        </div>
         <div class="phone fr-phone"><Image src={spotsMap} alt="Spots map covering the coastline of Bali" width={600} widths={[300, 600, 900]} sizes="(max-width: 400px) 80vw, 300px" format="webp" quality={80} style="border-radius: 44px" /></div>
       </div>
     </div>
 
     <!-- Row 2: Forecast detail -->
-    <div class="frow flip reveal">
+    <div class="frow mo flip">
       <div class="fr-copy">
         <h3>Wave, wind &amp; tide, decoded.</h3>
         <p>Height, period, direction, swell energy in kilojoules, wind arrows and a full tide curve — every variable a surfer reads, in one scroll.</p>
@@ -358,12 +394,22 @@ const jsonLd = [
       </div>
       <div class="fr-media">
         <div class="glow-orb"></div>
+        <div class="fm" aria-hidden="true">
+          <svg viewBox="0 0 560 560" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path class="a fm-draw" pathLength="1" style="stroke:var(--accent);--d:.3s" stroke-opacity=".55" stroke-width="2.5" d={fc.tide} />
+            <g style="stroke:var(--accent-2)" stroke-opacity=".5" stroke-width="1.6">
+              {fc.arrows.map((a) => (
+                <g transform={`translate(${a.x} ${a.y})`}><path class="a fm-arw" style={`--r0:${a.r0};--d:${a.delay}`} d="M0-9V9M-4 4L0 9 4 4" /></g>
+              ))}
+            </g>
+          </svg>
+        </div>
         <div class="phone fr-phone"><Image src={forecast} alt="Detailed forecast with wave, wind and tide" width={600} widths={[300, 600, 900]} sizes="(max-width: 400px) 80vw, 300px" format="webp" quality={80} style="border-radius: 44px" /></div>
       </div>
     </div>
 
     <!-- Row 3: Widgets -->
-    <div class="frow reveal">
+    <div class="frow mo">
       <div class="fr-copy">
         <h3>Conditions on your home screen.</h3>
         <p>A home-screen widget keeps your home break one glance away — current height, period, wind and the day's tide curve, refreshed automatically.</p>
@@ -375,6 +421,12 @@ const jsonLd = [
       </div>
       <div class="fr-media">
         <div class="glow-orb" style="background:var(--accent-2)"></div>
+        <div class="fm" aria-hidden="true">
+          <svg viewBox="0 0 560 560" fill="none" stroke-linecap="round">
+            <path class="a fm-draw" pathLength="1" style="stroke:var(--accent-2);--d:.2s" stroke-opacity=".5" stroke-width="3" d={tide} />
+          </svg>
+          <span class="a fm-now" style={`--d:1.5s;offset-path:path('${tide}')`}></span>
+        </div>
         <div class="phone fr-phone"><Image src={widget} alt="Home screen widget showing tide curve" width={600} widths={[300, 600, 900]} sizes="(max-width: 400px) 80vw, 300px" format="webp" quality={80} style="border-radius: 44px" /></div>
       </div>
     </div>
@@ -385,21 +437,21 @@ const jsonLd = [
 <section class="compare sec" id="compare">
   <div class="wave-texture"></div>
   <div class="wrap">
-    <div class="compare-grid">
-      <div class="reveal">
+    <div class="compare-grid mo">
+      <div>
         <span class="eyebrow cyan">Multi-model comparison</span>
         <h2 class="section-title" style="margin:18px 0">Compare side&nbsp;by&nbsp;side. See where forecasts agree.</h2>
         <p class="lede">Every model tells a slightly different story. Surfcast overlays ECMWF, GFS, MFWAM and DWD on the same chart, so you can spot consensus — and back yourself when they disagree.</p>
         <div class="legend">
-          <div class="item"><span class="swatch" style="background:var(--m-ecmwf)"></span><span class="nm">ECMWF</span><span class="sub">WAM</span></div>
-          <div class="item"><span class="swatch" style="background:var(--m-gfs)"></span><span class="nm">GFS</span><span class="sub">0.25°</span></div>
-          <div class="item"><span class="swatch" style="background:var(--m-mfwam)"></span><span class="nm">MFWAM</span><span class="sub">Météo-France</span></div>
-          <div class="item"><span class="swatch" style="background:var(--m-dwd)"></span><span class="nm">DWD</span><span class="sub">GWAM</span></div>
+          <div class="item a" style="--c:var(--m-ecmwf);--d:0.20s"><span class="swatch" style="background:var(--m-ecmwf)"></span><span class="nm">ECMWF</span><span class="sub">WAM</span></div>
+          <div class="item a" style="--c:var(--m-gfs);--d:0.55s"><span class="swatch" style="background:var(--m-gfs)"></span><span class="nm">GFS</span><span class="sub">0.25°</span></div>
+          <div class="item a" style="--c:var(--m-mfwam);--d:0.90s"><span class="swatch" style="background:var(--m-mfwam)"></span><span class="nm">MFWAM</span><span class="sub">Météo-France</span></div>
+          <div class="item a" style="--c:var(--m-dwd);--d:1.25s"><span class="swatch" style="background:var(--m-dwd)"></span><span class="nm">DWD</span><span class="sub">GWAM</span></div>
         </div>
       </div>
-      <div class="fr-media reveal d1">
+      <div class="fr-media">
         <div class="glow-orb" style="background:var(--accent-2);opacity:.18"></div>
-        <div class="phone fr-phone" style="width:min(320px,82%)"><Image src={ecmwf} alt="Model comparison charts for wave height, wind and tide" width={640} widths={[320, 640, 960]} sizes="(max-width: 400px) 80vw, 320px" format="webp" quality={80} style="border-radius: 44px" /></div>
+        <ModelChart />
       </div>
     </div>
   </div>
@@ -408,38 +460,38 @@ const jsonLd = [
 <!-- ============ MINI FEATURES ============ -->
 <section class="sec" style="padding-top:110px">
   <div class="wrap">
-    <div class="sec-head center reveal">
+    <div class="sec-head center">
       <span class="eyebrow">Details that matter</span>
       <h2 class="section-title">Small touches, fewer surprises.</h2>
     </div>
     <div class="mini-grid">
-      <div class="mini reveal">
-        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4" /></svg></div>
+      <div class="mini mo" style="--d:0.15s">
+        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="8" width="17" height="8" rx="2" /><path d="M22 11v2" /><rect class="a mi-fill" x="5" y="10.5" width="9" height="3" rx=".5" fill="currentColor" stroke="none" /></svg></div>
         <h4>Swell energy in kJ</h4>
         <p>Beyond height — see the real power behind a swell, graded from calm to double-overhead.</p>
       </div>
-      <div class="mini reveal d1">
-        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13" /><path d="M7 11l5 5 5-5" /><path d="M5 21h14" /></svg></div>
+      <div class="mini mo" style="--d:0.23s">
+        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5" opacity=".35" /><path class="a mi-swing" d="M12 6v12M8.5 9.5L12 6l3.5 3.5" /></svg></div>
         <h4>Wind arrows</h4>
         <p>Direction and speed shown as clear arrows for every hour, so offshore is obvious.</p>
       </div>
-      <div class="mini reveal d2">
-        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M3 9h18M8 2v4M16 2v4" /></svg></div>
+      <div class="mini mo" style="--d:0.31s">
+        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18h18" opacity=".4" />{[3, 6, 9, 12, 15, 18, 21].map((cx, i) => <circle class="a mi-dot" style={`--i:${i}`} cx={cx} cy="12" r="1.3" fill="currentColor" stroke="none" />)}</svg></div>
         <h4>7-day outlook</h4>
         <p>Plan the week ahead. Scan day by day and catch the swell before everyone else.</p>
       </div>
-      <div class="mini reveal">
-        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg></div>
+      <div class="mini mo" style="--d:0.15s">
+        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17a8 8 0 0 1 16 0" /><path class="a mi-needle" d="M12 17l4-5" /><circle cx="12" cy="17" r="1.3" fill="currentColor" stroke="none" /></svg></div>
         <h4>Clear at a glance</h4>
         <p>A calm dark interface and big, legible numbers you can read in bright sun.</p>
       </div>
-      <div class="mini reveal d1">
-        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg></div>
+      <div class="mini mo" style="--d:0.23s">
+        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="a mi-spin"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" /><path d="M18 3v4h-4" /></g></svg></div>
         <h4>Fresh data</h4>
         <p>Forecasts refresh through the day, drawn straight from the marine models you trust.</p>
       </div>
-      <div class="mini reveal d2">
-        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 6-9 11-9 11s-9-5-9-11a9 9 0 0118 0z" /><circle cx="12" cy="10" r="2.5" /></svg></div>
+      <div class="mini mo" style="--d:0.31s">
+        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="20" r="1" fill="currentColor" stroke="none" /><circle cx="18" cy="20" r="1" fill="currentColor" stroke="none" /><path d="M7.5 19.5Q12 15 16.5 19.5" stroke-dasharray="1.5 2.5" opacity=".5" /><path class="a mi-hop" d="M18 17.5c-2.4-2.5-3.8-4.4-3.8-6.3a3.8 3.8 0 0 1 7.6 0c0 1.9-1.4 3.8-3.8 6.3z" /></svg></div>
         <h4>Spots that travel</h4>
         <p>From Uluwatu to your home beachie — search any coast, anywhere you chase waves.</p>
       </div>
@@ -450,11 +502,11 @@ const jsonLd = [
 <!-- ============ FAQ ============ -->
 <section class="sec" id="faq" style="padding-top:30px">
   <div class="wrap">
-    <div class="sec-head center reveal">
+    <div class="sec-head center">
       <span class="eyebrow cyan">Good to know</span>
       <h2 class="section-title">Questions, answered.</h2>
     </div>
-    <div class="faq-list reveal">
+    <div class="faq-list">
       {faqs.map(({ q, a }, i) => (
         <details class="faq" open={i === 0}>
           <summary>{q}<span class="plus"></span></summary>
@@ -468,8 +520,12 @@ const jsonLd = [
 <!-- ============ CTA ============ -->
 <section class="sec cta" id="download">
   <div class="wrap">
-    <div class="cta-band reveal">
+    <div class="cta-band">
       <div class="wave-texture"></div>
+      <div class="cta-glow" aria-hidden="true"></div>
+      <svg class="cta-sw" viewBox="0 0 1200 240" preserveAspectRatio="none" fill="none" stroke="#fff" stroke-width="1.4" aria-hidden="true">
+        {ctaLines.map((l) => <path style={`--ty:${l.ty}`} stroke-opacity={l.opacity} d={l.d} />)}
+      </svg>
       <span class="eyebrow" style="color:rgba(255,255,255,.85);justify-content:center;margin-bottom:18px">Know before you go</span>
       <h2 class="section-title">Your next session<br />starts on the home screen.</h2>
       <p>Download Surfcast free and read the ocean before you even wax up.</p>
@@ -484,13 +540,4 @@ const jsonLd = [
   </div>
 </section>
 
-<!-- reveal-on-scroll -->
-<script is:inline>
-  (function () {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
-    document.querySelectorAll('.reveal:not(.in)').forEach(function (el) { io.observe(el); });
-  })();
-</script>
 </BaseLayout>

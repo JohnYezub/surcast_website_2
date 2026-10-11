@@ -1,0 +1,112 @@
+/* Landing-page motion ("swell trains"), imported by src/pages/index.astro.
+   Rules outside the media query are the static final state: with JS off,
+   Reduce Motion on, or no scroll-timeline support the page renders complete.
+   Time-based animation runs only under html.motion (set in BaseLayout <head>);
+   one-shots wait for .mo.in (src/scripts/motion.js). Shared rules (the .mo
+   pause and the footer line) live in public/styles.css. */
+.swell{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.swell svg{position:absolute;left:0;top:50%;width:3840px;height:800px;margin-top:-400px;overflow:visible}
+#features{overflow-x:clip}
+.fm{position:absolute;left:50%;top:50%;width:560px;height:560px;margin:-280px 0 0 -280px;z-index:1;pointer-events:none}
+.fm svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.fm-arw{transform-box:fill-box;transform-origin:center;transform:rotate(-35deg)}
+.fm-ring{transform-box:fill-box;transform-origin:center}
+.fm-now{position:absolute;left:0;top:0;width:14px;height:14px;border-radius:50%;background:var(--accent-hi);box-shadow:0 0 0 5px color-mix(in srgb,var(--accent-hi) 22%,transparent);offset-rotate:0deg;offset-distance:62%}
+.chart-card{position:relative;z-index:2;width:100%;max-width:560px;margin:0;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--r-lg);padding:20px 20px 16px;box-shadow:0 30px 60px -30px rgba(0,0,0,.7)}
+.chart-card svg{display:block;width:100%;height:auto;overflow:visible}
+.chart-card text{font-family:var(--font-mono);font-size:12px;fill:var(--text-tertiary)}
+.chart-card .cc-title{fill:var(--text-secondary);letter-spacing:.08em}
+.chart-card .cc-agree text{fill:var(--bg-base);font-weight:600;letter-spacing:.06em;font-size:11px}
+.chart-card figcaption{margin-top:12px;font-family:var(--font-mono);font-size:12px;color:var(--text-tertiary);letter-spacing:.02em}
+.cc-agree{transform-box:fill-box;transform-origin:center}
+.trust .chip,.legend .item{position:relative}
+.trust .chip::after,.legend .item::after{content:"";position:absolute;inset:-1px;border-radius:inherit;border:1px solid var(--c,transparent);opacity:0;pointer-events:none}
+.mini .icn svg{overflow:visible}
+.mi-fill,.mi-dot{transform-box:fill-box;transform-origin:left center}
+.mi-dot{transform-origin:center}
+.mi-swing,.mi-needle,.mi-spin{transform-box:view-box}
+.mi-swing{transform-origin:12px 12px;transform:rotate(45deg)}
+.mi-needle{transform-origin:12px 17px}
+.mi-spin{transform-origin:12px 12px}
+.cta-glow{position:absolute;z-index:1;left:50%;bottom:-200px;width:960px;height:420px;margin-left:-480px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--m-mfwam) 55%,transparent),transparent);opacity:.6;pointer-events:none}
+.cta-band .cta-glow,.cta-band .cta-sw{position:absolute}
+.cta-sw{left:0;bottom:0;width:100%;height:60%;z-index:1;pointer-events:none}
+.cta-sw path{vector-effect:non-scaling-stroke;transform-box:view-box;transform-origin:600px 120px;transform:scaleY(.04)}
+
+@media (prefers-reduced-motion:no-preference){
+@keyframes sc-draw{from{stroke-dashoffset:1;opacity:0}8%{opacity:1}to{stroke-dashoffset:0;opacity:1}}
+@keyframes sc-fade{from{opacity:0}}
+@keyframes sc-ring{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+
+/* 1 · hero */
+.motion .sw-line{stroke-dasharray:1 1;animation:sc-draw 2.6s var(--d,0s) cubic-bezier(.25,.1,.25,1) both}
+.motion .swell-a{animation:sc-hero-drift 64s linear infinite}
+.motion .swell-b{animation:sc-hero-drift 46s linear infinite}
+@keyframes sc-hero-drift{to{transform:translateX(-1920px)}}
+.motion .hero-phone{animation:sc-hero-surface 1.1s .2s cubic-bezier(.2,.7,.2,1) both}
+@keyframes sc-hero-surface{from{opacity:.35;transform:translateY(120px)}to{opacity:1;transform:none}}
+.motion .hero .float-pill{animation:sc-hero-land .7s var(--d,0s) cubic-bezier(.3,1.45,.5,1) both}
+@keyframes sc-hero-land{from{opacity:0;transform:translateY(22px) scale(.86)}to{opacity:1;transform:none}}
+.hero .float-pill .v{font-variant-numeric:tabular-nums}
+@supports (animation-timeline:scroll()){
+.swell{animation:sc-hero-par-bg linear both;animation-timeline:scroll(root block);animation-range:0 100vh}
+@keyframes sc-hero-par-bg{to{translate:0 140px}}
+.motion .hero-phone{animation:sc-hero-surface 1.1s .2s cubic-bezier(.2,.7,.2,1) both,sc-hero-par-phone linear both;animation-timeline:auto,scroll(root block);animation-range:normal,0 100vh}
+@keyframes sc-hero-par-phone{to{translate:0 -60px}}
+.motion .hero .float-pill{animation:sc-hero-land .7s var(--d,0s) cubic-bezier(.3,1.45,.5,1) both,sc-hero-par-chip linear both;animation-timeline:auto,scroll(root block);animation-range:normal,0 100vh}
+@keyframes sc-hero-par-chip{to{translate:0 -120px}}
+}
+/* model tags load in sequence */
+.motion .trust .chip.a{animation:sc-fade .5s var(--d) ease-out both}
+.motion .trust .chip.a .dot{animation:sc-tag-dot .6s var(--d) cubic-bezier(.3,1.6,.5,1) both}
+.motion .trust .chip.a::after{animation:sc-ring 1.4s var(--d) ease-out both}
+@keyframes sc-tag-dot{from{transform:scale(0)}}
+
+/* 2 · feature rows */
+.motion .fm-ring{stroke-dasharray:1 1;animation:sc-fm-ring 1.6s var(--d) cubic-bezier(.2,.7,.2,1) both}
+@keyframes sc-fm-ring{from{stroke-dashoffset:1;opacity:0;transform:scale(.82)}10%{opacity:1}to{stroke-dashoffset:0;opacity:1;transform:none}}
+.motion .fm-pin{animation:sc-fm-pin .75s var(--d) cubic-bezier(.3,.8,.4,1) both}
+@keyframes sc-fm-pin{from{opacity:0;transform:translateY(-40px)}55%{opacity:1;transform:translateY(2px)}75%{transform:translateY(-7px)}to{opacity:1;transform:none}}
+.motion .fm-arw{animation:sc-fm-arw 1.3s var(--d) cubic-bezier(.3,1.35,.5,1) both}
+@keyframes sc-fm-arw{from{transform:rotate(var(--r0));opacity:.2}to{transform:rotate(-35deg);opacity:1}}
+.motion .fm-draw{stroke-dasharray:1 1;animation:sc-draw 1.8s var(--d) cubic-bezier(.4,0,.2,1) both}
+.motion .fm-now{animation:sc-fm-now 1.6s var(--d) cubic-bezier(.45,0,.2,1) both}
+@keyframes sc-fm-now{from{offset-distance:0%;opacity:0}12%{opacity:1}to{offset-distance:62%;opacity:1}}
+@supports (animation-timeline:view()){
+#features .fr-phone{animation:sc-settle linear both;animation-timeline:view();animation-range:entry 0% cover 42%}
+#features .frow.flip .fr-phone{--ry:9deg}
+@keyframes sc-settle{from{opacity:.3;transform:perspective(1400px) translateY(90px) rotateX(16deg) rotateY(var(--ry,-9deg)) scale(.93)}to{opacity:1;transform:none}}
+}
+
+/* 3 · model comparison */
+.motion .cc-line{stroke-dasharray:1 1;animation:sc-draw 1.2s var(--d) cubic-bezier(.4,0,.2,1) both}
+.motion .cc-band{animation:sc-fade .9s 2.3s ease-out both}
+.motion .cc-agree{animation:sc-pop .6s 2.7s cubic-bezier(.3,1.45,.5,1) both}
+@keyframes sc-pop{from{opacity:0;transform:scale(.8)}}
+.motion .legend .item.a .swatch{transform-origin:left center;animation:sc-swatch 1.2s var(--d) cubic-bezier(.4,0,.2,1) both}
+.motion .legend .item.a::after{animation:sc-ring 1.6s var(--d) ease-out both}
+@keyframes sc-swatch{from{transform:scaleX(0)}}
+
+/* 4 · details grid icons */
+.motion .mi-fill{animation:sc-mi-fill 1s var(--d) cubic-bezier(.3,.8,.3,1) both}
+@keyframes sc-mi-fill{from{transform:scaleX(0)}}
+.motion .mi-swing{animation:sc-mi-swing 1.4s var(--d) cubic-bezier(.3,.7,.3,1) both}
+@keyframes sc-mi-swing{from{transform:rotate(-120deg)}50%{transform:rotate(80deg)}75%{transform:rotate(32deg)}to{transform:rotate(45deg)}}
+.motion .mi-dot{animation:sc-mi-dot .4s calc(var(--d) + var(--i) * .09s) ease-out both}
+@keyframes sc-mi-dot{from{opacity:.15;transform:scale(.5)}}
+.motion .mi-needle{animation:sc-mi-needle 1.3s var(--d) cubic-bezier(.3,.7,.3,1) both}
+@keyframes sc-mi-needle{from{transform:rotate(-100deg)}60%{transform:rotate(18deg)}to{transform:none}}
+.motion .mi-spin{animation:sc-mi-spin 1.1s var(--d) cubic-bezier(.6,0,.2,1) both}
+@keyframes sc-mi-spin{from{transform:rotate(-360deg)}}
+.motion .mi-hop{animation:sc-mi-hop .9s var(--d) cubic-bezier(.4,0,.2,1) both}
+@keyframes sc-mi-hop{from{transform:translate(-12px,0)}45%{transform:translate(-6px,-6px)}to{transform:none}}
+
+/* 5 · closing CTA + footer */
+.motion .cta-glow{animation:sc-cta-glow 7s ease-in-out infinite alternate}
+@keyframes sc-cta-glow{from{opacity:.4}to{opacity:.8}}
+@supports (animation-timeline:view()){
+.cta-band{view-timeline:--sc-cta block}
+.cta-sw path{animation:sc-cta-settle linear both;animation-timeline:--sc-cta;animation-range:entry 0% cover 50%}
+@keyframes sc-cta-settle{from{transform:translateY(var(--ty)) scaleY(1)}to{transform:scaleY(.04)}}
+}
+}

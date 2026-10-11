@@ -1,0 +1,70 @@
+---
+// #compare centrepiece: the four-model wave-height chart as inline SVG, built
+// from src/data/model-compare.ts at build time. Lines draw in model order on
+// scroll-in (see src/styles/landing-motion.css); static markup = final state.
+import { DAYS, MODELS, STEPS, series } from '../data/model-compare';
+
+const L = 46, R = 540, T = 56, B = 290;
+const Y_MIN = 0.5, Y_MAX = 3;
+const r1 = (n: number) => Math.round(n * 10) / 10;
+const x = (t: number) => r1(L + (t * (R - L)) / (STEPS - 1));
+const y = (v: number) => r1(B - ((v - Y_MIN) / (Y_MAX - Y_MIN)) * (B - T));
+
+// Smooth line through the points (Catmull-Rom → cubic Bézier).
+function smooth(values: number[]) {
+  const p = values.map((v, t) => [L + (t * (R - L)) / (STEPS - 1), B - ((v - Y_MIN) / (Y_MAX - Y_MIN)) * (B - T)]);
+  let d = `M${r1(p[0][0])} ${r1(p[0][1])}`;
+  for (let i = 0; i < p.length - 1; i++) {
+    const p0 = p[i - 1] ?? p[i], p1 = p[i], p2 = p[i + 1], p3 = p[i + 2] ?? p2;
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += `C${r1(c1[0])} ${r1(c1[1])} ${r1(c2[0])} ${r1(c2[1])} ${r1(p2[0])} ${r1(p2[1])}`;
+  }
+  return d;
+}
+
+const lines = MODELS.map((m, i) => ({ ...m, d: smooth(series[m.id]), delay: [0.2, 0.55, 0.9, 1.25][i] }));
+
+// Envelope between the highest and lowest model at each step.
+const all = Object.values(series);
+const hi = Array.from({ length: STEPS }, (_, t) => Math.max(...all.map((s) => s[t])));
+const lo = Array.from({ length: STEPS }, (_, t) => Math.min(...all.map((s) => s[t])));
+const band =
+  hi.map((v, t) => `${t ? 'L' : 'M'}${x(t)} ${y(v)}`).join('') +
+  lo.map((_, i) => STEPS - 1 - i).map((t) => `L${x(t)} ${y(lo[t])}`).join('') + 'Z';
+
+// Each day spans 4 steps; dividers fall between days, labels in the middle.
+const dividers = DAYS.slice(1).map((_, i) => x(3.5 + i * 4));
+const agreeEnd = x(11.5); // Mon–Wed
+const agreeMid = r1((L + agreeEnd) / 2);
+const gridY = [1, 2, 3];
+---
+<figure class="chart-card">
+  <svg viewBox="0 0 560 330" role="img" aria-labelledby="cc-t">
+    <title id="cc-t">Sample 7-day wave height at Uluwatu from ECMWF, GFS, MFWAM and DWD. The four models agree from Monday to Wednesday, then spread apart.</title>
+    <text class="cc-title" x={L} y="22">ULUWATU · WAVE HEIGHT</text>
+    <text x={R} y="22" text-anchor="end">7 DAYS · 4 MODELS</text>
+    <rect class="a cc-band" x={L} y={T} width={r1(agreeEnd - L)} height={B - T} rx="6" style="fill:var(--accent-2)" fill-opacity=".06" />
+    <g style="stroke:var(--border-subtle)" fill="none">
+      {gridY.map((v) => (
+        <>
+          <path d={`M${L} ${y(v)}H${R}`} />
+          <text x="36" y={r1(y(v) + 4)} text-anchor="end" stroke="none">{v} m</text>
+        </>
+      ))}
+      {dividers.map((dx) => <path d={`M${dx} ${T}V${B}`} stroke-dasharray="2 4" />)}
+    </g>
+    <path class="a cc-band" d={band} style="fill:var(--accent-2)" fill-opacity=".16" />
+    <g fill="none" stroke-width="2.4" stroke-linecap="round">
+      {lines.map((l) => (
+        <path class="a cc-line" pathLength="1" style={`stroke:${l.color};--d:${l.delay.toFixed(2)}s`} d={l.d} />
+      ))}
+    </g>
+    <g class="a cc-agree">
+      <rect x={r1(agreeMid - 68)} y="66" width="136" height="24" rx="12" style="fill:var(--accent-2)" />
+      <text x={agreeMid} y="82" text-anchor="middle">FORECASTS AGREE</text>
+    </g>
+    {DAYS.map((day, i) => <text x={x(1.5 + i * 4)} y="316" text-anchor="middle">{day}</text>)}
+  </svg>
+  <figcaption>Sample data: 7-day wave height at Uluwatu. Models agree Mon–Wed, then diverge.</figcaption>
+</figure>

@@ -7,4 +7,12 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://www.surfcastapp.com',
   build: { format: 'file' },
+  vite: {
+    build: {
+      // Explicit CSS targets: without them Lightning CSS folds animation-timeline
+      // into the `animation` shorthand, which Chrome rejects, so the
+      // scroll-driven motion on the landing page would silently drop.
+      cssTarget: ['chrome111', 'edge111', 'firefox114', 'safari16.4'],
+    },
+  },
 });
