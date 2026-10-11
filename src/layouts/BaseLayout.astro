@@ -53,6 +53,10 @@ const toJson = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c');
   <link rel="canonical" href={canonical} />
   <meta name="theme-color" content="#0C1322" />
 
+  <!-- Motion gate: runs before CSS so animated elements never flash. Without it
+       (no JS, Reduce Motion, old browser) the page renders in its final state. -->
+  <script is:inline>if('IntersectionObserver' in window&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('motion')</script>
+
   <!-- Icons -->
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
@@ -96,5 +100,6 @@ const toJson = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c');
   <slot />
   <Footer home={home} active={footerActive} />
   <Analytics />
+  <script src="../scripts/motion.js"></script>
 </body>
 </html>
