@@ -13,6 +13,9 @@ export const APPSTORE_ID = '6760907145';
 export const APPSTORE_URL =
   `https://apps.apple.com/id/app/surfcast-waves-wind-tides/id${APPSTORE_ID}`;
 
+// Public wave-model charts viewer (separate app on a subdomain).
+export const CHARTS_URL = 'https://charts.surfcastapp.com/';
+
 // Default social-share image (see scripts/make-assets.mjs), 1200×630.
 export const OG_IMAGE = '/og-image.png';
 export const OG_IMAGE_ALT =

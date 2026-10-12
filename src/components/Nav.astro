@@ -1,5 +1,5 @@
 ---
-import { APPSTORE_URL } from '../consts';
+import { APPSTORE_URL, CHARTS_URL } from '../consts';
 
 interface Props {
   /** On the homepage the section links are same-page hashes and the CTA goes
@@ -21,6 +21,7 @@ const getApp = home ? APPSTORE_URL : 'index.html#download';
     <div class="nav-links">
       <a href={`${prefix}#features`}>Features</a>
       <a href={`${prefix}#compare`}>Models</a>
+      <a href={CHARTS_URL}>Charts</a>
       <a href={`${prefix}#faq`}>FAQ</a>
       <a href="blog.html" style={active === 'blog' ? 'color:var(--text-primary)' : undefined}>Blog</a>
     </div>
