@@ -13,8 +13,12 @@ export const APPSTORE_ID = '6760907145';
 export const APPSTORE_URL =
   `https://apps.apple.com/id/app/surfcast-waves-wind-tides/id${APPSTORE_ID}`;
 
-// Public wave-model charts viewer (separate app on a subdomain).
+// Wave-chart backend: models.json → per-model catalog → region manifest → PNG
+// frames. The server sends no CORS headers, so the browser reads the JSON through
+// a same-origin proxy (rewrite in vercel.json, Vite proxy in astro.config.mjs).
+// PNG frames are plain <img> loads and come straight from the origin.
 export const CHARTS_URL = 'https://charts.surfcastapp.com/';
+export const CHARTS_PROXY = '/charts-data/';
 
 // Default social-share image (see scripts/make-assets.mjs), 1200×630.
 export const OG_IMAGE = '/og-image.png';

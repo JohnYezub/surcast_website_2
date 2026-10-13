@@ -7,6 +7,7 @@ Surfcast works without an account: favourite spots and settings stay on the devi
 ## Product
 
 - [Home](https://www.surfcastapp.com/): what Surfcast does, feature overview and FAQ.
+- [Wave charts](https://www.surfcastapp.com/charts.html): animated significant wave height maps from ECMWF, NOAA GFS, Météo-France MFWAM, DWD GWAM and DWD EWAM (European Seas), covering every frame of each model's latest run.
 - [Download on the App Store](https://apps.apple.com/id/app/surfcast-waves-wind-tides/id6760907145): the iPhone and iPad app.
 
 ## Journal

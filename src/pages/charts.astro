@@ -1,0 +1,299 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE_URL, APPSTORE_URL } from '../consts';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Surfcast', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Wave charts', item: `${SITE_URL}/charts.html` },
+    ],
+  },
+];
+---
+<BaseLayout
+  title="Wave charts — ECMWF, GFS, MFWAM & DWD wave height maps · Surfcast"
+  description="Animated significant wave height charts from five wave models — ECMWF, NOAA GFS, Météo-France MFWAM, DWD GWAM and EWAM — across every frame of the latest run."
+  canonicalPath="/charts.html"
+  navActive="charts"
+  jsonLd={jsonLd}
+>
+<style is:global>
+  .cv-head { padding: 44px 0 26px; position: relative; overflow: hidden; }
+  .cv-head::before { content:""; position:absolute; inset:0; z-index:0;
+    background: radial-gradient(860px 420px at 12% -30%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 60%); }
+  .cv-head .wrap { position: relative; z-index: 2; }
+  .cv-head h1 { font-size: clamp(34px, 4.6vw, 58px); letter-spacing: -.035em; margin: 16px 0 12px; }
+
+  .sr-only { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+
+  .cv { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--r-xl); padding: 18px; margin-bottom: 96px; }
+
+  /* ── selector bar ── */
+  .cv-bar { display:flex; align-items:center; justify-content:space-between; gap: 12px 16px; flex-wrap: wrap; margin-bottom: 14px; }
+  .cv-models { display:flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px; margin: -2px; }
+  .cv-models::-webkit-scrollbar { display: none; }
+  .cv-model {
+    display:inline-flex; align-items:center; gap: 8px; flex-shrink: 0; cursor: pointer;
+    font-family: var(--font-mono); font-size: 13.5px; font-weight: 500; color: var(--text-secondary);
+    padding: 9px 15px; border-radius: 999px; background: var(--bg-surface); border: 1px solid var(--border-subtle);
+    transition: color .15s, border-color .15s, background .15s;
+  }
+  .cv-model .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex-shrink: 0; }
+  .cv-model small { font-size: 10.5px; letter-spacing: .04em; color: var(--text-tertiary); text-transform: uppercase; }
+  .cv-model:hover:not(:disabled) { color: var(--text-primary); border-color: var(--border-strong); }
+  .cv-model[aria-pressed="true"] { color: var(--text-primary); border-color: var(--c); background: color-mix(in srgb, var(--c) 14%, var(--bg-surface)); }
+  .cv-model:disabled { cursor: not-allowed; opacity: .5; }
+  .cv-model:disabled .dot { background: var(--text-faint); }
+
+  .cv-bar-end { display:flex; gap: 8px; align-items:center; }
+  .cv-select { position: relative; }
+  .cv-select select {
+    appearance: none; -webkit-appearance: none; font: 500 14.5px var(--font-body); color: var(--text-primary);
+    background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: 999px;
+    padding: 9px 38px 9px 16px; cursor: pointer; min-width: 190px;
+  }
+  .cv-select select:disabled { cursor: default; color: var(--text-secondary); }
+  .cv-select::after { content:""; position:absolute; right: 16px; top: 50%; width: 7px; height: 7px; margin-top: -5px;
+    border-right: 1.5px solid var(--text-secondary); border-bottom: 1.5px solid var(--text-secondary); transform: rotate(45deg); pointer-events:none; }
+  .cv-btn {
+    display:inline-flex; align-items:center; justify-content:center; gap: 8px; cursor:pointer;
+    background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: 999px;
+    padding: 9px 15px; font: 500 14.5px var(--font-body); color: var(--text-primary); transition: background .15s, border-color .15s;
+  }
+  .cv-btn:hover:not(:disabled) { border-color: var(--border-strong); background: var(--bg-elevated); }
+  .cv-btn:disabled { opacity: .4; cursor: default; }
+  .cv-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* ── readout above the map ── */
+  .cv-readout { display:flex; align-items: flex-end; justify-content: space-between; gap: 6px 18px; flex-wrap: wrap; padding: 4px 4px 12px; min-height: 58px; }
+  .cv-time { font-family: var(--font-display); font-size: clamp(20px, 2.4vw, 27px); letter-spacing: -.02em; line-height: 1.15; color: var(--text-secondary); }
+  .cv-time strong { color: var(--text-primary); font-weight: 600; }
+  .cv-sub { font-family: var(--font-mono); font-size: 12.5px; color: var(--text-tertiary); letter-spacing: .02em; margin-top: 4px; }
+  .cv-meta { display:flex; gap: 8px; align-items: center; font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary); }
+  .cv-lead { color: var(--accent-hi); font-weight: 600; font-size: 15px; }
+
+  /* ── map ── the frame keeps the manifest's pixel aspect; square polar maps cap on height */
+  .cv-stage { position: relative; }
+  .cv-map {
+    --w: 1200; --h: 991; --max-h: min(76vh, 920px);
+    position: relative; margin: 0 auto; border-radius: var(--r-md); overflow: hidden;
+    width: min(100%, calc(var(--max-h) * var(--w) / var(--h)));
+    aspect-ratio: var(--w) / var(--h);
+    background: #102331; border: 1px solid var(--border-subtle);
+  }
+  .cv-map img { width: 100%; height: 100%; object-fit: contain; }
+  .cv-empty { position:absolute; inset:0; display:grid; place-items:center; color: var(--text-tertiary); font-family: var(--font-mono); font-size: 13px; letter-spacing: .06em; }
+  .cv-spinner { position:absolute; top: 12px; right: 12px; width: 26px; height: 26px; border-radius: 50%;
+    border: 2.5px solid rgba(255,255,255,.18); border-top-color: #fff; animation: cv-spin .8s linear infinite; }
+  .cv-spinner[hidden] { display: none; }
+  @keyframes cv-spin { to { transform: rotate(360deg); } }
+
+  /* ── status line ── */
+  .cv-status { display:flex; align-items:center; gap: 12px; flex-wrap: wrap; margin-top: 12px; padding: 10px 14px; border-radius: var(--r-sm);
+    font-size: 14.5px; color: var(--text-secondary); background: var(--bg-surface); border: 1px solid var(--border-subtle); }
+  .cv-status[hidden] { display: none; }
+  .cv-status[data-kind="error"] { color: #FFD3B0; border-color: color-mix(in srgb, var(--orange-500) 45%, transparent); background: color-mix(in srgb, var(--orange-500) 10%, var(--bg-surface)); }
+  .cv-status[data-kind="loading"] #cv-status-text::before { content:""; display:inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-hi); margin-right: 10px; vertical-align: 1px; animation: cv-pulse 1s ease-in-out infinite alternate; }
+  @keyframes cv-pulse { from { opacity: .25; } }
+  .cv-status .cv-btn { padding: 6px 14px; font-size: 13.5px; }
+
+  /* ── transport + timeline ── */
+  .cv-player { display:flex; align-items:flex-start; gap: 14px; margin-top: 16px; }
+  .cv-transport { display:flex; gap: 6px; flex-shrink: 0; padding-top: 2px; }
+  .cv-transport .cv-btn { width: 42px; height: 42px; padding: 0; }
+  #cv-play { background: var(--accent); border-color: transparent; color: #fff; }
+  #cv-play:hover:not(:disabled) { background: var(--accent-hi); }
+  #cv-play .i-pause, #cv-play[aria-pressed="true"] .i-play { display: none; }
+  #cv-play[aria-pressed="true"] .i-pause { display: block; }
+
+  .cv-timeline { flex: 1; min-width: 0; }
+  .cv-track { position: relative; height: 46px; }
+  .cv-days, .cv-ticks { position:absolute; left: 0; right: 0; }
+  .cv-days { top: 6px; bottom: 6px; border-radius: 8px; overflow: hidden; background: var(--bg-surface); }
+  .cv-days i { position:absolute; top:0; bottom:0; }
+  .cv-days i.alt { background: rgba(255,255,255,.035); }
+  .cv-ticks { bottom: 6px; height: 9px; }
+  .cv-ticks i { position:absolute; bottom: 0; width: 1px; height: 100%; background: var(--text-faint); transform: translateX(-.5px); }
+  .cv-now { position:absolute; top: 2px; bottom: 2px; width: 2px; margin-left: -1px; background: var(--orange-400); border-radius: 2px; pointer-events: none; }
+  .cv-now[hidden] { display: none; }
+  .cv-now::before { content:"now"; position:absolute; top: -15px; left: 50%; transform: translateX(-50%); font: 600 9.5px var(--font-mono); letter-spacing: .08em; color: var(--orange-400); text-transform: uppercase; }
+  .cv-range { position:absolute; inset: 0; width: 100%; height: 100%; margin: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; touch-action: pan-y; }
+  .cv-range:disabled { cursor: default; }
+  .cv-range::-webkit-slider-runnable-track { height: 100%; background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 30%, transparent) var(--p, 0%), transparent var(--p, 0%)); border-radius: 8px; }
+  .cv-range::-moz-range-track { height: 100%; background: transparent; }
+  .cv-range::-moz-range-progress { height: 100%; background: color-mix(in srgb, var(--accent) 30%, transparent); border-radius: 8px; }
+  .cv-range::-webkit-slider-thumb { -webkit-appearance: none; width: 6px; height: 46px; border-radius: 4px; background: #fff; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-hi) 55%, transparent), 0 4px 12px rgba(0,0,0,.5); }
+  .cv-range::-moz-range-thumb { width: 6px; height: 46px; border: 0; border-radius: 4px; background: #fff; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-hi) 55%, transparent); }
+  .cv-range:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: 3px; border-radius: 8px; }
+  .cv-range:disabled::-webkit-slider-thumb { background: var(--text-faint); box-shadow: none; }
+  .cv-labels { position: relative; height: 18px; margin-top: 4px; }
+  .cv-labels span { position:absolute; transform: translateX(-50%); white-space: nowrap; font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); letter-spacing: .03em; }
+
+  /* ── legend + toggles ── */
+  .cv-row { display:flex; align-items:center; justify-content: space-between; gap: 16px 28px; flex-wrap: wrap; margin-top: 18px; }
+  .cv-legend-wrap { flex: 1 1 420px; min-width: 0; }
+  .cv-legend-title { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 8px; }
+  .cv-legend { display:flex; align-items: flex-start; gap: 18px; }
+  .cv-legend-scale { flex: 1; min-width: 0; padding-right: 14px; }
+  .cv-legend-bar { display:flex; height: 12px; border-radius: 4px; overflow: hidden; }
+  .cv-legend-bar span { flex: 1; }
+  .cv-legend-marks { position: relative; height: 16px; margin-top: 4px; }
+  .cv-legend-marks span { position:absolute; transform: translateX(-50%); font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); }
+  .cv-legend-marks span:first-child { transform: none; }
+  .cv-legend-missing { display:inline-flex; align-items:center; gap: 7px; font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
+  .cv-legend-missing i { width: 14px; height: 12px; border-radius: 3px; border: 1px solid var(--border-strong); }
+
+  .cv-toggles { display:flex; gap: 10px; flex-wrap: wrap; }
+  .cv-seg { display:inline-flex; padding: 3px; border-radius: 999px; background: var(--bg-surface); border: 1px solid var(--border-subtle); }
+  .cv-seg button { border: 0; background: transparent; cursor: pointer; padding: 6px 13px; border-radius: 999px; font-family: var(--font-mono); font-size: 12.5px; color: var(--text-secondary); }
+  .cv-seg button[aria-pressed="true"] { background: var(--bg-elevated); color: var(--text-primary); }
+
+  /* ── run info, badges, notes ── */
+  .cv-info { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border-subtle); display:flex; align-items:center; gap: 8px 14px; flex-wrap: wrap; }
+  .cv-run { font-family: var(--font-mono); font-size: 12.5px; color: var(--text-secondary); letter-spacing: .02em; }
+  .cv-badges { display:flex; gap: 6px; flex-wrap: wrap; }
+  .cv-badge { font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border-default); color: var(--text-secondary); }
+  .cv-badge.warn { color: var(--orange-400); border-color: color-mix(in srgb, var(--orange-400) 45%, transparent); }
+  .cv-badge.info { color: var(--accent-hi); border-color: color-mix(in srgb, var(--accent-hi) 40%, transparent); }
+  .cv-notes { margin-top: 14px; display:flex; flex-direction: column; gap: 6px; }
+  .cv-notes li { font-size: 14.5px; color: var(--text-secondary); padding-left: 18px; position: relative; line-height: 1.5; }
+  .cv-notes li::before { content:""; position:absolute; left: 3px; top: 9px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent-hi); opacity: .8; }
+  .cv-foot { margin-top: 14px; display:grid; grid-template-columns: 1fr auto; gap: 14px 30px; align-items: end; }
+  .cv-attribution { font-size: 12.5px; color: var(--text-tertiary); line-height: 1.6; }
+  .cv-attribution a { color: var(--text-secondary); border-bottom: 1px solid var(--border-strong); }
+  .cv-attribution a:hover { color: var(--text-primary); }
+  .cv-app { font-size: 14px; color: var(--text-secondary); text-align: right; max-width: 34ch; }
+  .cv-app a { color: var(--accent-hi); font-weight: 600; }
+
+  @media (max-width: 880px) {
+    .cv-foot { grid-template-columns: 1fr; }
+    .cv-app { text-align: left; }
+  }
+  @media (max-width: 560px) {
+    .cv-head { padding: 30px 0 18px; }
+    .cv-head .lede { font-size: 16px; }
+    .wrap.cv-wrap { padding: 0 12px; }
+    .cv { padding: 12px; border-radius: var(--r-lg); margin-bottom: 64px; }
+    .cv-bar-end { width: 100%; }
+    .cv-select { flex: 1; }
+    .cv-select select { width: 100%; min-width: 0; }
+    /* five models fit in one row: the selected one is never scrolled out of view */
+    .cv-models { width: 100%; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; overflow: visible; }
+    .cv-model { justify-content: center; gap: 5px; padding: 8px 2px; font-size: 12px; }
+    .cv-model .dot { width: 7px; height: 7px; }
+    .cv-model small { display: none; }
+    /* every other scale mark, so feet labels don't collide */
+    .cv-legend { flex-wrap: wrap; gap: 8px; }
+    .cv-legend-scale { flex-basis: 100%; padding-right: 10px; }
+    .cv-legend-marks span:nth-child(even) { display: none; }
+    .cv-map { --max-h: 70vh; border-radius: 10px; }
+    .cv-player { gap: 10px; flex-direction: column; align-items: stretch; }
+    .cv-transport { justify-content: center; }
+    .cv-transport .cv-btn { width: 52px; height: 44px; }
+    .cv-row { gap: 14px; }
+    .cv-toggles { width: 100%; justify-content: space-between; }
+  }
+</style>
+
+<header class="cv-head">
+  <div class="wrap">
+    <span class="eyebrow">Wave charts</span>
+    <h1>Every model, every frame.</h1>
+    <p class="lede">Significant wave height maps from five wave models — the full run each model publishes, from analysis to the last forecast hour.</p>
+  </div>
+</header>
+
+<main class="wrap cv-wrap">
+  <section class="cv" id="cv" aria-label="Wave height charts">
+    <div class="cv-bar">
+      <div class="cv-models" id="cv-models" role="group" aria-label="Wave model">
+        <span class="cv-model" aria-hidden="true" style="visibility:hidden">ECMWF</span>
+      </div>
+      <div class="cv-bar-end">
+        <label class="cv-select">
+          <span class="sr-only">Region</span>
+          <select id="cv-region" disabled><option>Region</option></select>
+        </label>
+        <button class="cv-btn" id="cv-refresh" type="button" title="Check for newer forecast runs">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+          <span>Refresh</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="cv-readout">
+      <div>
+        <div class="cv-time" id="cv-time">Loading forecast…</div>
+        <div class="cv-sub" id="cv-source">&nbsp;</div>
+      </div>
+      <div class="cv-meta"><span class="cv-lead" id="cv-lead"></span><span id="cv-frame"></span></div>
+    </div>
+
+    <div class="cv-stage">
+      <div class="cv-map" id="cv-map"><div class="cv-empty">LOADING CHARTS…</div></div>
+      <div class="cv-spinner" id="cv-spinner" hidden aria-hidden="true"></div>
+    </div>
+
+    <div class="cv-status" id="cv-status" role="status" aria-live="polite" hidden>
+      <span id="cv-status-text"></span>
+      <button class="cv-btn" id="cv-retry" type="button" hidden>Try again</button>
+    </div>
+
+    <div class="cv-player">
+      <div class="cv-transport">
+        <button class="cv-btn" id="cv-prev" type="button" aria-label="Previous frame" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="cv-btn" id="cv-play" type="button" aria-label="Play" aria-pressed="false" disabled>
+          <svg class="i-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>
+          <svg class="i-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+        </button>
+        <button class="cv-btn" id="cv-next" type="button" aria-label="Next frame" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+      <div class="cv-timeline">
+        <div class="cv-track" id="cv-track">
+          <div class="cv-days" id="cv-days"></div>
+          <div class="cv-ticks" id="cv-ticks" aria-hidden="true"></div>
+          <div class="cv-now" id="cv-now" hidden aria-hidden="true"></div>
+          <input class="cv-range" id="cv-range" type="range" min="0" max="1" step="1" value="0" aria-label="Forecast time" disabled />
+        </div>
+        <div class="cv-labels" id="cv-labels" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="cv-row">
+      <div class="cv-legend-wrap">
+        <div class="cv-legend-title">Significant wave height, <span id="cv-legend-unit">m</span></div>
+        <div class="cv-legend" id="cv-legend" role="img" aria-label="Significant wave height scale"></div>
+      </div>
+      <div class="cv-toggles">
+        <div class="cv-seg" role="group" aria-label="Time zone">
+          <button type="button" data-zone="local" aria-pressed="false">Local</button>
+          <button type="button" data-zone="utc" aria-pressed="false">UTC</button>
+        </div>
+        <div class="cv-seg" role="group" aria-label="Height units">
+          <button type="button" data-units="m" aria-pressed="false">m</button>
+          <button type="button" data-units="ft" aria-pressed="false">ft</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cv-info">
+      <span class="cv-run" id="cv-run"></span>
+      <div class="cv-badges" id="cv-badges"></div>
+    </div>
+    <ul class="cv-notes" id="cv-notes"></ul>
+    <div class="cv-foot">
+      <p class="cv-attribution" id="cv-attribution"></p>
+      <p class="cv-app">Swell period and spot-by-spot forecasts live in the app. <a href={APPSTORE_URL}>Get Surfcast →</a></p>
+    </div>
+  </section>
+</main>
+
+<script src="../scripts/charts.ts"></script>
+</BaseLayout>
