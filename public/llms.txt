@@ -2,11 +2,12 @@
 
 > Surfcast is a surf forecast app for iPhone and iPad. It compares four global wave models (ECMWF, GFS, MFWAM and DWD) on one screen and shows wave height, swell period and direction, swell energy in kilojoules, wind and tide for surf spots worldwide.
 
-Surfcast works without an account: favourite spots and settings stay on the device. A home-screen widget shows live wave height, period, wind and the day's tide curve for a pinned spot. The app is available on the Apple App Store; an Android version is planned. A paid subscription, Surfcast Pro, is available in the app.
+Surfcast works without an account: favourite spots and settings stay on the device. A home-screen widget shows live wave height, period, wind and the day's tide curve for a pinned spot, and lock-screen widgets show the tide, swell height and period, and wave energy. A region overview animates up to 15 days of model wave forecast across whole ocean basins. The app is available on the Apple App Store; an Android version is planned. A paid subscription, Surfcast Pro, is available in the app.
 
 ## Product
 
 - [Home](https://www.surfcastapp.com/): what Surfcast does, feature overview and FAQ.
+- [Wave charts](https://www.surfcastapp.com/charts.html): animated significant wave height maps from ECMWF, NOAA GFS, Météo-France MFWAM, DWD GWAM and DWD EWAM (European Seas), covering every frame of each model's latest run.
 - [Download on the App Store](https://apps.apple.com/id/app/surfcast-waves-wind-tides/id6760907145): the iPhone and iPad app.
 
 ## Journal

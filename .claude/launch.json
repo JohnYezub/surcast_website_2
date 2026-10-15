@@ -4,8 +4,24 @@
     {
       "name": "preview",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["astro", "preview", "--port", "4399"],
+      "runtimeArgs": [
+        "astro",
+        "preview",
+        "--port",
+        "4399"
+      ],
       "port": 4399
+    },
+    {
+      "name": "dev",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "astro",
+        "dev",
+        "--port",
+        "4398"
+      ],
+      "port": 4398
     }
   ]
 }

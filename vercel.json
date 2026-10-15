@@ -1,4 +1,7 @@
 {
+  "rewrites": [
+    { "source": "/charts-data/:path*", "destination": "https://charts.surfcastapp.com/:path*" }
+  ],
   "headers": [
     {
       "source": "/_astro/(.*)",
