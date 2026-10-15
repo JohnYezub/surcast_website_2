@@ -5,6 +5,8 @@ import { APPSTORE_URL, APP_RATING, APP_STORE_TITLE, SITE_NAME, SITE_URL, LOGO, O
 import forecast from '../assets/forecast.png';
 import spotsMap from '../assets/spots-map.png';
 import widget from '../assets/widget.png';
+import regionOverview from '../assets/region-overview.png';
+import lockScreen from '../assets/lock-screen.png';
 import ModelChart from '../components/ModelChart.astro';
 import { heroSwell, mapMotif, forecastMotif, widgetTide, ctaSwell } from '../lib/motion-geometry';
 import '../styles/landing-motion.css';
@@ -25,7 +27,7 @@ const faqs = [
   },
   {
     q: 'Is there a home-screen widget?',
-    a: "Yes. Pin any spot to a widget and see live wave height, period, wind and the full day's tide curve without opening the app.",
+    a: "Yes. Pin any spot to a widget and see live wave height, period, wind and the full day's tide curve without opening the app. Lock-screen widgets show the tide, swell and wave energy without even unlocking your phone.",
   },
   {
     q: 'Do I need an account?',
@@ -428,6 +430,40 @@ const jsonLd = [
           <span class="a fm-now" style={`--d:1.5s;offset-path:path('${tide}')`}></span>
         </div>
         <div class="phone fr-phone"><Image src={widget} alt="Home screen widget showing tide curve" width={600} widths={[300, 600, 900]} sizes="(max-width: 400px) 80vw, 300px" format="webp" quality={80} style="border-radius: 44px" /></div>
+      </div>
+    </div>
+
+    <!-- Row 4: Region overview -->
+    <div class="frow mo flip">
+      <div class="fr-copy">
+        <h3>The whole ocean, in motion.</h3>
+        <p>Watch swell travel across entire ocean basins — up to 15 days of model forecast, frame by frame.</p>
+        <ul class="fr-list">
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6" /></svg></span>Pick a model and an ocean region</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6" /></svg></span>Play, pause or scrub through every frame</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6" /></svg></span>Times in local or UTC</li>
+        </ul>
+      </div>
+      <div class="fr-media">
+        <div class="glow-orb"></div>
+        <div class="phone fr-phone"><Image src={regionOverview} alt="Region overview animating ECMWF significant wave height across the Indian Ocean" width={574} widths={[300, 574]} sizes="(max-width: 400px) 80vw, 300px" format="webp" quality={85} style="border-radius: 44px" /></div>
+      </div>
+    </div>
+
+    <!-- Row 5: Lock screen widgets -->
+    <div class="frow mo">
+      <div class="fr-copy">
+        <h3>Check the surf without unlocking.</h3>
+        <p>Today's tide curve, swell height and period, and wave energy — right on your lock screen.</p>
+        <ul class="fr-list">
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6" /></svg></span>Tide bars with the next high or low</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6" /></svg></span>Swell height and period in one glance</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 6" /></svg></span>Wave energy in kilojoules</li>
+        </ul>
+      </div>
+      <div class="fr-media">
+        <div class="glow-orb" style="background:var(--accent-2)"></div>
+        <div class="phone fr-phone"><Image src={lockScreen} alt="Lock screen with Surfcast widgets for tide, swell height and period, and wave energy" width={574} widths={[300, 574]} sizes="(max-width: 400px) 80vw, 300px" format="webp" quality={85} style="border-radius: 44px" /></div>
       </div>
     </div>
   </div>
